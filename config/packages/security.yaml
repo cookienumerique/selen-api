@@ -34,7 +34,7 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/auth/google, roles: PUBLIC_ACCESS }
-        - { path: ^/users/me, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/users/me, roles: ROLE_USER }
 
 when@test:
     security:
