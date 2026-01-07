@@ -1,0 +1,40 @@
+services:
+  php:
+    container_name: php_selen
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    # ports:
+    #   - "9005:9000"
+    # expose:
+    #   - "9000"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db
+
+  nginx:
+    container_name: nginx_selen
+    image: nginx:1.27-alpine
+    ports:
+      - "8083:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+
+  db:
+    container_name: database_selen
+    image: postgres:16
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
