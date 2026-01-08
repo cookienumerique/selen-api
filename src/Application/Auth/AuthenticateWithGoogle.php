@@ -23,6 +23,8 @@ final class AuthenticateWithGoogle
 
         $googleId = $payload['sub'];
         $email = $payload['email'];
+        $name = $payload['name'] ?? $payload['email'];
+        $picture = $payload['picture'] ?? '';
 
         $user = $this->userRepository->findByGoogleId($googleId);
 
@@ -31,13 +33,15 @@ final class AuthenticateWithGoogle
                 $user = (new User())
                     ->setGoogleId($googleId)
                     ->setEmail($email)
-                    ->setRoles([UserRole::USER]);
+                    ->setRoles([UserRole::USER])
+                    ->setName($name)
+                    ->setPicture($picture);
+
                 $user = $this->userRepository->create($user);
             }
         } catch (\Exception $e) {
             throw new \Exception('Failed to create user', $e->getCode());
         }
-
         return $user;
     }
 }

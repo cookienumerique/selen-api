@@ -18,7 +18,7 @@ final class AuthController extends AbstractController
         AuthenticateWithGoogle $auth,
         JwtTokenManager $jwt
     ): JsonResponse {
-        
+
         $data = $request?->toArray() ?? [];
 
         if (!isset($data['idToken'])) {
@@ -26,14 +26,10 @@ final class AuthController extends AbstractController
         }
         $user = $auth->execute($data['idToken']);
         $token = $jwt->create($user);
+
         return $this->json([
             'token' => $token,
-            'user' => [
-                'id' => $user->getId(),
-                'email' => $user->getEmail(),
-                'roles' => $user->getRoles(),
-                'createdAt' => $user->getCreatedAt()->format(DATE_ATOM),
-            ]
+            'user' => $user->serialize()
         ]);
     }
 }

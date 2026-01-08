@@ -22,10 +22,7 @@ final class UserController extends AbstractController
         }
 
         return $this->json([
-            'uid' => $user->getUid()->toRfc4122(),
-            'email' => $user->getEmail(),
-            'roles' => $user->getRoles(),
-            'createdAt' => $user->getCreatedAt()->format(DATE_ATOM),
+            'user' => $user->serialize()
         ]);
     }
 }

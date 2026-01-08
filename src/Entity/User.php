@@ -36,6 +36,12 @@ class User implements UserInterface
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $name = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $picture = null;
+
     public function __construct()
     {
         $this->uid = Uuid::v4();
@@ -121,5 +127,41 @@ class User implements UserInterface
         $this->createdAt = $createdAt;
 
         return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(?string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getPicture(): ?string
+    {
+        return $this->picture;
+    }
+
+    public function setPicture(?string $picture): static
+    {
+        $this->picture = $picture;
+
+        return $this;
+    }
+
+    public function serialize(): array
+    {
+        return [
+            'uid' => $this->uid->toRfc4122(),
+            'email' => $this->email,
+            'roles' => $this->roles,
+            'name' => $this->name,
+            'picture' => $this->picture,
+            'createdAt' => $this->createdAt->format(DATE_ATOM),
+        ];
     }
 }
