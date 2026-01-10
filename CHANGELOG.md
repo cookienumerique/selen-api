@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.0] – 2026-01-08
+
+### Added
+
+-   list of capsules
+
 ## [1.1.0] – 2026-01-08
 
 ### Added
