@@ -3,10 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\CapsuleRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Contract\SerializableInterface;
 
 #[ORM\Entity(repositoryClass: CapsuleRepository::class)]
-class Capsule
+class Capsule implements SerializableInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -18,6 +21,17 @@ class Capsule
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
+
+    /**
+     * @var Collection<int, CapsuleResponse>
+     */
+    #[ORM\OneToMany(targetEntity: CapsuleResponse::class, mappedBy: 'capsule')]
+    private Collection $capsuleResponses;
+
+    public function __construct()
+    {
+        $this->capsuleResponses = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -55,5 +69,35 @@ class Capsule
             'content' => $this->content,
             'createdAt' => $this->createdAt->format(DATE_ATOM),
         ];
+    }
+
+    /**
+     * @return Collection<int, CapsuleResponse>
+     */
+    public function getCapsuleResponses(): Collection
+    {
+        return $this->capsuleResponses;
+    }
+
+    public function addCapsuleResponse(CapsuleResponse $capsuleResponse): static
+    {
+        if (!$this->capsuleResponses->contains($capsuleResponse)) {
+            $this->capsuleResponses->add($capsuleResponse);
+            $capsuleResponse->setCapsule($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCapsuleResponse(CapsuleResponse $capsuleResponse): static
+    {
+        if ($this->capsuleResponses->removeElement($capsuleResponse)) {
+            // set the owning side to null (unless already changed)
+            if ($capsuleResponse->getCapsule() === $this) {
+                $capsuleResponse->setCapsule(null);
+            }
+        }
+
+        return $this;
     }
 }

@@ -2,25 +2,20 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Application\Capsule\GetAllCapsules;
+use App\Application\Capsule\ListCapsules;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Controller\ApiController;
 
-final class CapsuleController extends AbstractController
+final class CapsuleController extends ApiController
 {
     #[Route('/capsules', methods: ['GET'])]
-    // #[IsGranted('ROLE_USER')]
+    #[IsGranted('ROLE_USER')]
     public function list(
-        GetAllCapsules $getAllCapsules
+        ListCapsules $listCapsuleService
     ): JsonResponse {
-        $capsules = $getAllCapsules->execute();
-
-        return $this->json(
-            [
-                'capsules' => array_map(fn($capsule) => $capsule->serialize(), $capsules)
-            ]
-        );
+        $capsules = $listCapsuleService->execute();
+        return $this->respondItems($capsules, JsonResponse::HTTP_OK);
     }
 }
