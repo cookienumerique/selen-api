@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.3.0] - 2026-01-26
+
+### Adeded 
+- implement capsule response management with create, list, and get functionalities
+
 ## [1.2.0] – 2026-01-08
 
 ### Added

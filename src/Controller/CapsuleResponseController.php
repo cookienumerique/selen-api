@@ -35,7 +35,7 @@ class CapsuleResponseController extends ApiController
 
     $capsuleId = (int) $capsuleId;
 
-    if (!is_string($response) || $response === '') {
+    if (!is_string($response)) {
       throw new MissingPayloadException('response');
     }
 
