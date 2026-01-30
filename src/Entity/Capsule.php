@@ -19,7 +19,7 @@ class Capsule implements SerializableInterface
     #[ORM\Column(type: "text")]
     private ?string $content = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'datetime_immutable')]
     private ?\DateTimeImmutable $createdAt = null;
 
     /**
@@ -28,9 +28,16 @@ class Capsule implements SerializableInterface
     #[ORM\OneToMany(targetEntity: CapsuleResponse::class, mappedBy: 'capsule')]
     private Collection $capsuleResponses;
 
+    #[ORM\ManyToOne(inversedBy: 'capsules')]
+    private ?SubThemeCapsule $subThemeCapsule = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $title = null;
+
     public function __construct()
     {
         $this->capsuleResponses = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -97,6 +104,30 @@ class Capsule implements SerializableInterface
                 $capsuleResponse->setCapsule(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSubThemeCapsule(): ?SubThemeCapsule
+    {
+        return $this->subThemeCapsule;
+    }
+
+    public function setSubThemeCapsule(?SubThemeCapsule $subThemeCapsule): static
+    {
+        $this->subThemeCapsule = $subThemeCapsule;
+
+        return $this;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(?string $title): static
+    {
+        $this->title = $title;
 
         return $this;
     }
