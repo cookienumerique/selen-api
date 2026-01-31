@@ -8,9 +8,14 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
 final class ApiExceptionListener
 {
+  public function __construct(
+    private bool $debug
+  ) {}
+
   public function __invoke(ExceptionEvent $event): void
   {
     $e = $event->getThrowable();
+
     if ($e instanceof ApiException) {
       $event->setResponse(new JsonResponse([
         'code' => $e->getErrorCode(),
@@ -19,10 +24,10 @@ final class ApiExceptionListener
 
       return;
     }
-
     $event->setResponse(new JsonResponse([
       'code' => 500,
       'message' => 'Internal server error',
+      'debug' => $this->debug ? $e->getMessage() : null,
     ], 500));
   }
 }

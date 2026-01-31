@@ -1,4 +1,9 @@
-# Changelog
+## [1.5.0] - 2026-01-31
+
+### Added
+- Inner weather listing
+- Inner weather response implementation (create and list)
+- Debug message support in error responses
 
 ## [1.4.0] - 2026-01-30
 
@@ -8,8 +13,6 @@
 - Linked `capsule` to `sub_theme_capsule`
 - Added database constraints (FK + unique indexes) to ensure data integrity
 - Seeded initial themes and sub-themes
-
-# Changelog
 
 ## [1.3.0] - 2026-01-26
 
