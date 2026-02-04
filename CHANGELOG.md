@@ -1,3 +1,12 @@
+# CHANGELOG 
+## [1.6.0] - 2026-02-04
+
+### Added
+- api return sub theme capsule
+- api return media from disk (image sub theme capsule)
+- MOUTH_PATH in composer.yml
+- symfony/mime library
+
 ## [1.5.0] - 2026-01-31
 
 ### Added

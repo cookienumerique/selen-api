@@ -10,6 +10,8 @@ services:
     #   - "9000"
     volumes:
       - .:/var/www/html
+      - ${MOUNT_PATH}:${MOUNT_PATH_CONTAINER}
+
     depends_on:
       - db
 

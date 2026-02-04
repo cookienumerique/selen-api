@@ -16,28 +16,21 @@ class SubThemeCapsuleRepository extends ServiceEntityRepository
         parent::__construct($registry, SubThemeCapsule::class);
     }
 
-    //    /**
-    //     * @return SubThemeCapsule[] Returns an array of SubThemeCapsule objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findByCriteria(array $criteria): array
+    {
+        $qb = $this->createQueryBuilder('s');
+        if (isset($criteria['code'])) {
+            if (is_array($criteria['code'])) {
+                $qb
+                    ->andWhere('s.code IN (:codes)')
+                    ->setParameter('codes', $criteria['code']);
+            } else {
+                $qb
+                    ->andWhere('s.code = :code')
+                    ->setParameter('code', $criteria['code']);
+            }
+        }
 
-    //    public function findOneBySomeField($value): ?SubThemeCapsule
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return $qb->getQuery()->getResult();
+    }
 }

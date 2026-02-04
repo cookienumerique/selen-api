@@ -14,8 +14,8 @@ final class ListCapsules
   /**
    * @return Capsule[]
    */
-  public function execute(): array
+  public function execute(array $criteria): array
   {
-    return $this->capsuleRepository->findAllOrdered();
+    return $this->capsuleRepository->findByCriteria($criteria);
   }
 }

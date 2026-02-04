@@ -19,11 +19,17 @@ class CapsuleRepository extends ServiceEntityRepository
     /**
      * @return Capsule[]
      */
-    public function findAllOrdered(): array
+    public function findByCriteria($criteria = []): array
     {
-        return $this->createQueryBuilder('c')
-            ->orderBy('c.id', 'ASC')
-            ->getQuery()
-            ->getResult();
+        $qb = $this->createQueryBuilder('c')
+            ->orderBy('c.createdAt', 'DESC');
+
+        if (!empty($criteria['subThemeCapsuleId'])) {
+            $qb
+                ->andWhere('c.subThemeCapsule = :subThemeId')
+                ->setParameter('subThemeId', (int) $criteria['subThemeCapsuleId']);
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }

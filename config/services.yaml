@@ -30,5 +30,8 @@ services:
             - { name: kernel.event_listener, event: kernel.exception }
         arguments:
             $debug: '%kernel.debug%'
+    App\Controller\MediaController:
+        arguments:
+            $storageDir: '%env(MOUNT_PATH_CONTAINER)%'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -73,8 +73,9 @@ class Capsule implements SerializableInterface
     {
         return [
             'id' => $this->id,
+            'title' => $this->title,
             'content' => $this->content,
-            'createdAt' => $this->createdAt->format(DATE_ATOM),
+            'subThemeCapsule' => $this->subThemeCapsule->serialize(),
         ];
     }
 

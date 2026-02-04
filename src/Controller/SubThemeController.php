@@ -3,22 +3,23 @@
 namespace App\Controller;
 
 use Symfony\Component\Routing\Attribute\Route;
-use App\Application\Capsule\ListCapsules;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Controller\ApiController;
+use App\Application\SubThemeCapsule\ListSubThemeCapsules;
 use Symfony\Component\HttpFoundation\Request;
 
-final class CapsuleController extends ApiController
+final class SubThemeController extends ApiController
 {
-    #[Route('/capsules', methods: ['GET'])]
+    #[Route('/sub-theme-capsules', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
     public function list(
         Request $request,
-        ListCapsules $listCapsules
+        ListSubThemeCapsules $listSubThemeCapsules
     ): JsonResponse {
         $params = $request->query->all();
-        $capsules = $listCapsules->execute($params);
-        return $this->respondItems($capsules, JsonResponse::HTTP_OK);
+
+        $subThemeCapsules = $listSubThemeCapsules->execute($params);
+        return $this->respondItems($subThemeCapsules, JsonResponse::HTTP_OK);
     }
 }

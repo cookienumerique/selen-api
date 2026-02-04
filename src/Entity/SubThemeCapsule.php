@@ -6,6 +6,7 @@ use App\Repository\SubThemeCapsuleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Contract\SerializableInterface;
 
 #[ORM\Entity(repositoryClass: SubThemeCapsuleRepository::class)]
 #[ORM\Table(
@@ -16,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
         )
     ]
 )]
-class SubThemeCapsule
+class SubThemeCapsule implements SerializableInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -38,6 +39,9 @@ class SubThemeCapsule
      */
     #[ORM\OneToMany(targetEntity: Capsule::class, mappedBy: 'subThemeCapsule')]
     private Collection $capsules;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image = null;
 
     public function __construct()
     {
@@ -113,5 +117,27 @@ class SubThemeCapsule
         }
 
         return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): static
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    public function serialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'code' => $this->code,
+            'name' => $this->name,
+            'image' => $this->image,
+        ];
     }
 }
