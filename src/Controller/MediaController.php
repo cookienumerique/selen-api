@@ -16,7 +16,6 @@ final class MediaController extends ApiController
   ) {}
 
   #[Route('/media/{path}', name: 'media_show', requirements: ['path' => '.+'], methods: ['GET'])]
-  #[IsGranted('ROLE_USER')]
   public function show(string $path): Response
   {
     $baseDir = rtrim($this->storageDir, '/');
