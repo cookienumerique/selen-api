@@ -75,7 +75,7 @@ class Capsule implements SerializableInterface
             'id' => $this->id,
             'title' => $this->title,
             'content' => $this->content,
-            'subThemeCapsule' => $this->subThemeCapsule->serialize(),
+            'subThemeCapsule' => $this->subThemeCapsule?->serialize(),
         ];
     }
 
