@@ -167,6 +167,7 @@ class User implements UserInterface, SerializableInterface
             'uid' => $this->uid->toRfc4122(),
             'email' => $this->email,
             'roles' => $this->roles,
+            'firstName' => $this->firstName,
             'name' => $this->name,
             'picture' => $this->picture,
             'createdAt' => $this->createdAt->format(DATE_ATOM),
