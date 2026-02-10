@@ -5,7 +5,6 @@ namespace App\Application\Auth;
 use App\Repository\UserRepository;
 use App\Infrastructure\Auth\GoogleTokenVerifier;
 use App\Entity\User;
-use App\Domain\User\UserRole;
 
 final class AuthenticateWithGoogle
 {
@@ -23,25 +22,35 @@ final class AuthenticateWithGoogle
 
         $googleId = $payload['sub'];
         $email = $payload['email'];
-        $name = $payload['name'] ?? $payload['email'];
+        $lastName = $payload['family_name'];
+        $firstName = $payload['given_name'];
         $picture = $payload['picture'] ?? '';
 
         $user = $this->userRepository->findByGoogleId($googleId);
 
-        try {
-            if (!$user) {
-                $user = (new User())
-                    ->setGoogleId($googleId)
-                    ->setEmail($email)
-                    ->setRoles([UserRole::USER])
-                    ->setName($name)
-                    ->setPicture($picture);
-
-                $user = $this->userRepository->create($user);
-            }
-        } catch (\Exception $e) {
-            throw new \Exception('Failed to create user', $e->getCode());
+        if (!$user && $email) {
+            $user = $this->userRepository->findOneBy(['email' => $email]);
         }
+        if (!$user) {
+            $user = new User();
+            $user->setGoogleId($googleId);
+            $user->setEmail($email)
+                ->setPicture($picture)
+                ->setName($lastName)
+                ->setFirstName($firstName);
+        } elseif (!$user->getGoogleId()) {
+            $user->setGoogleId($googleId);
+        }
+
+        if ($firstName && !$user->getFirstName()) {
+            $user->setFirstName($firstName);
+        }
+
+        if ($lastName && !$user->getName()) {
+            $user->setName($lastName);
+        }
+
+        $this->userRepository->create($user);
         return $user;
     }
 }

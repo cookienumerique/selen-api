@@ -1,4 +1,10 @@
 # CHANGELOG 
+
+## [1.7.0] - 2026-02-10
+
+### Added
+- login with apple
+
 ## [1.6.0] - 2026-02-04
 
 ### Added

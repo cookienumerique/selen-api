@@ -22,7 +22,7 @@ class User implements UserInterface, SerializableInterface
     #[ORM\Column(type: 'uuid', unique: true)]
     private Uuid $uid;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(length: 180, nullable: true)]
     private ?string $email = null;
 
     /**
@@ -31,7 +31,7 @@ class User implements UserInterface, SerializableInterface
     #[ORM\Column]
     private array $roles = [];
 
-    #[ORM\Column(length: 255, unique: true)]
+    #[ORM\Column(length: 255, unique: true, nullable: true)]
     private ?string $googleId = null;
 
     #[ORM\Column]
@@ -43,10 +43,17 @@ class User implements UserInterface, SerializableInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $picture = null;
 
+    #[ORM\Column(length: 255, nullable: true, unique: true)]
+    private ?string $appleId = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $firstName = null;
+
     public function __construct()
     {
         $this->uid = Uuid::v4();
         $this->createdAt = new \DateTimeImmutable();
+        $this->roles = [UserRole::USER];
     }
 
     public function getId(): ?int
@@ -164,5 +171,29 @@ class User implements UserInterface, SerializableInterface
             'picture' => $this->picture,
             'createdAt' => $this->createdAt->format(DATE_ATOM),
         ];
+    }
+
+    public function getAppleId(): ?string
+    {
+        return $this->appleId;
+    }
+
+    public function setAppleId(?string $appleId): static
+    {
+        $this->appleId = $appleId;
+
+        return $this;
+    }
+
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(?string $firstName): static
+    {
+        $this->firstName = $firstName;
+
+        return $this;
     }
 }
