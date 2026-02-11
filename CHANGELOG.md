@@ -1,5 +1,10 @@
 # CHANGELOG 
 
+## [1.8.0] - 2026-02-11
+
+### Added
+- user can delete his account
+
 ## [1.7.0] - 2026-02-10
 
 ### Added

@@ -19,7 +19,10 @@ class Capsule implements SerializableInterface
     #[ORM\Column(type: "text")]
     private ?string $content = null;
 
-    #[ORM\Column(type: 'datetime_immutable')]
+    #[ORM\Column(
+        type: 'datetime_immutable',
+        options: ['default' => 'CURRENT_TIMESTAMP']
+    )]
     private ?\DateTimeImmutable $createdAt = null;
 
     /**

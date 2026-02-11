@@ -9,14 +9,6 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Contract\SerializableInterface;
 
 #[ORM\Entity(repositoryClass: SubThemeCapsuleRepository::class)]
-#[ORM\Table(
-    uniqueConstraints: [
-        new ORM\UniqueConstraint(
-            name: 'uniq_sub_theme_capsule_code',
-            columns: ['theme_capsule_id', 'code']
-        )
-    ]
-)]
 class SubThemeCapsule implements SerializableInterface
 {
     #[ORM\Id]
@@ -28,10 +20,10 @@ class SubThemeCapsule implements SerializableInterface
     #[ORM\JoinColumn(name: 'theme_capsule_id', nullable: false)]
     private ?ThemeCapsule $themeCapsule = null;
 
-    #[ORM\Column(length: 50)] // unique code for sub theme capsule
+    #[ORM\Column(length: 50, unique: true)]
     private ?string $code = null;
 
-    #[ORM\Column(length: 255)] // unique name for sub theme capsule
+    #[ORM\Column(length: 255)]
     private ?string $name = null;
 
     /**

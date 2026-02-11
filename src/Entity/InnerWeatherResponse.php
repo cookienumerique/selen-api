@@ -28,7 +28,7 @@ class InnerWeatherResponse implements SerializableInterface
     private ?InnerWeather $innerWeather = null;
 
     #[ORM\ManyToOne(inversedBy: 'innerWeatherResponses')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $author = null;
 
     #[ORM\Column(type: 'date_immutable')]

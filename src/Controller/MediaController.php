@@ -7,7 +7,6 @@ use App\Controller\ApiController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class MediaController extends ApiController
 {
