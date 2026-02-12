@@ -1,5 +1,10 @@
 # CHANGELOG 
 
+## [1.9.0] - 2026-02-11
+
+### Added
+- user can modify a capsule response
+
 ## [1.8.0] - 2026-02-11
 
 ### Added

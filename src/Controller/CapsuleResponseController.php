@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Application\CapsuleResponse\ListCapsulesResponses;
 use App\Application\CapsuleResponse\GetCapsuleResponse;
 use App\Application\Capsule\GetCapsule;
+use App\Application\CapsuleResponse\UpdateCapsuleResponse;
 
 class CapsuleResponseController extends ApiController
 {
@@ -64,6 +65,30 @@ class CapsuleResponseController extends ApiController
     UserInterface $author,
   ): JsonResponse {
     $capsuleResponse = $getCapsuleResponse->execute($id, $author);
+
+    return $this->respondItem($capsuleResponse, JsonResponse::HTTP_OK);
+  }
+
+  #[Route('/capsule-responses/{id}', methods: ['PATCH'])]
+  #[IsGranted('ROLE_USER')]
+  public function update(
+    int $id,
+    Request $request,
+    UserInterface $user,
+    UpdateCapsuleResponse $updateCapsuleResponse,
+  ): JsonResponse {
+
+    $data = $request->toArray();
+    $response = $data['response'] ?? null;
+    if (!$response === null) {
+      throw new MissingPayloadException('response');
+    }
+
+    $capsuleResponse = $updateCapsuleResponse->execute(
+      $id,
+      $response,
+      $user
+    );
 
     return $this->respondItem($capsuleResponse, JsonResponse::HTTP_OK);
   }

@@ -29,4 +29,10 @@ class CapsuleResponseRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    public function save(CapsuleResponse $capsuleResponse): void
+    {
+        $this->getEntityManager()->persist($capsuleResponse);
+        $this->getEntityManager()->flush();
+    }
 }
