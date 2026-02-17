@@ -41,7 +41,8 @@ class VerifyAndroidSubscription
       $status = SubscriptionStatusAndroid::from($googlePurchase->getSubscriptionState());
       $productIdEnum = SubscriptionProductId::from($lineItem->getProductId());
       $basePlanIdEnum = SubscriptionBasePlanId::from($lineItem->getOfferDetails()?->getBasePlanId());
-
+      $autoRenewingPlan = $lineItem->getAutoRenewingPlan();
+      $isAutoRenew = $autoRenewingPlan !== null;
       // 1. On cherche si l'abonnement existe déjà (findOneBy et non findBy)
       $subscription = $this->subscriptionRepository->findOneBy([
         'purchaseToken' => $purchaseToken,
@@ -64,6 +65,7 @@ class VerifyAndroidSubscription
         ->setBasePlanId($basePlanIdEnum)
         ->setStatus($status)
         ->setExpiresAt($expiresAt)
+        ->setAutoRenew($isAutoRenew)
         ->setUpdatedAt(new \DateTimeImmutable());
 
       $this->subscriptionRepository->save($subscription);

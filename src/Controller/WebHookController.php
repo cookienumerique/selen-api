@@ -14,14 +14,17 @@ final class WebHookController extends ApiController
   #[Route('/webhooks/google-play', methods: ['POST'])]
   public function googlePlay(
     Request $request,
-    GooglePlayNotificationHandler $handler,
+    GooglePlayNotificationHandler $googlePlayNotificationHandler,
     LoggerInterface $logger
   ): JsonResponse {
 
     // 1️⃣ Vérification du JWT envoyé par Pub/Sub
     $authHeader = $request->headers->get('Authorization');
     $logger->info('Authorization header', [
-      'authHeader' => $authHeader
+      'authHeader' => json_encode($authHeader, true)
+    ]);
+    $logger->info('Request content', [
+      'content' => $request->getContent()
     ]);
     if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
       return new JsonResponse(['error' => 'Missing Authorization header'], 401);
@@ -57,39 +60,24 @@ final class WebHookController extends ApiController
     }
 
     // 2️⃣ Décodage du payload Pub/Sub
-    $body = json_decode($request->getContent(), true);
-
-    if (!isset($body['message']['data'])) {
-      return new JsonResponse(['error' => 'Invalid Pub/Sub message'], 400);
-    }
-
-    $decodedData = base64_decode($body['message']['data']);
-    $notification = json_decode($decodedData, true);
-
-    if (!$notification) {
-      return new JsonResponse(['error' => 'Invalid decoded data'], 400);
-    }
-
-    // 3️⃣ Extraire subscriptionNotification
+    $json = $request->getContent();
+    $notification = json_decode($json, true);
     $subscriptionNotification = $notification['subscriptionNotification'] ?? null;
 
     if (!$subscriptionNotification) {
       return new JsonResponse(['error' => 'Not a subscription notification'], 200);
-      // 200 volontaire : on évite que Google retry
     }
-
     $purchaseToken = $subscriptionNotification['purchaseToken'] ?? null;
-    $subscriptionId = $subscriptionNotification['subscriptionId'] ?? null;
+    $productId = $subscriptionNotification['subscriptionId'] ?? null;
     $notificationType = $subscriptionNotification['notificationType'] ?? null;
 
-    if (!$purchaseToken || !$subscriptionId) {
+    if (!$purchaseToken || !$productId) {
       return new JsonResponse(['error' => 'Missing purchaseToken'], 400);
     }
 
-    // 4️⃣ On délègue au handler métier
-    $handler->execute(
+    $googlePlayNotificationHandler->execute(
       $purchaseToken,
-      $subscriptionId,
+      $productId,
       $notificationType
     );
 

@@ -49,6 +49,9 @@ class Subscription implements SerializableInterface
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\Column]
+    private bool $autoRenew;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -177,6 +180,15 @@ class Subscription implements SerializableInterface
 
         return $this;
     }
+    public function getAutoRenew(): bool
+    {
+        return $this->autoRenew;
+    }
+    public function setAutoRenew(bool $autoRenew): static
+    {
+        $this->autoRenew = $autoRenew;
+        return $this;
+    }
 
     public function serialize(): array
     {
@@ -192,6 +204,7 @@ class Subscription implements SerializableInterface
             'originalTransactionId' => $this->originalTransactionId,
             'createdAt' => $this->createdAt,
             'updatedAt' => $this->updatedAt,
+            'autoRenew' => $this->autoRenew,
         ];
     }
 }
