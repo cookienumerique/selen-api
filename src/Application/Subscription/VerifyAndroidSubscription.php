@@ -37,8 +37,7 @@ class VerifyAndroidSubscription
 
       $lineItems = $googlePurchase->getLineItems();
       $lineItem = $lineItems[0];
-      $expiryTimestamp = (int) ($lineItem->getExpiryTime() / 1000);
-      $expiresAt = (new \DateTimeImmutable())->setTimestamp($expiryTimestamp);
+      $expiresAt = new \DateTimeImmutable($lineItem->getExpiryTime());
       $status = SubscriptionStatusAndroid::from($googlePurchase->getSubscriptionState());
       $productIdEnum = SubscriptionProductId::from($lineItem->getProductId());
       $basePlanIdEnum = SubscriptionBasePlanId::from($lineItem->getOfferDetails()?->getBasePlanId());
