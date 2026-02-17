@@ -4,6 +4,7 @@
 
 ### Added
 - user can modify a capsule response
+- purchase subscription on android
 
 ## [1.8.0] - 2026-02-11
 

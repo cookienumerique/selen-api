@@ -13,7 +13,7 @@
         "doctrine/doctrine-migrations-bundle": "^4.0",
         "doctrine/orm": "^3.6",
         "firebase/php-jwt": "^6.11",
-        "google/apiclient": "^2.18",
+        "google/apiclient": "^2.19",
         "lexik/jwt-authentication-bundle": "^3.2",
         "nelmio/cors-bundle": "^2.6",
         "phpdocumentor/reflection-docblock": "^5.6",
@@ -25,6 +25,7 @@
         "symfony/flex": "^2",
         "symfony/framework-bundle": "8.0.*",
         "symfony/mime": "8.0.*",
+        "symfony/monolog-bundle": "^4.0",
         "symfony/property-access": "8.0.*",
         "symfony/property-info": "8.0.*",
         "symfony/runtime": "8.0.*",
@@ -41,7 +42,9 @@
             "symfony/runtime": true
         },
         "bump-after-update": true,
-        "sort-packages": true
+        "sort-packages": true,
+        "optimize-autoloader": true,
+        "classmap-authoritative": true
     },
     "autoload": {
         "psr-4": {
