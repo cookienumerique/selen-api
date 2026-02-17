@@ -12,6 +12,10 @@ security:
                 property: uid
 
     firewalls:
+        webhook:
+            pattern: ^/webhooks/google-play
+            stateless: true
+            security: false
         api:
             pattern: ^/
             stateless: true
