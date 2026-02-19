@@ -43,7 +43,7 @@ class VerifyAndroidSubscription
       $basePlanIdEnum = SubscriptionBasePlanId::from($lineItem->getOfferDetails()?->getBasePlanId());
       $autoRenewingPlan = $lineItem->getAutoRenewingPlan();
       $isAutoRenew = $autoRenewingPlan !== null;
-      // 1. On cherche si l'abonnement existe déjà (findOneBy et non findBy)
+      // 1. On cherche si l'abonnement existe déjà
       $subscription = $this->subscriptionRepository->findOneBy([
         'purchaseToken' => $purchaseToken,
         'provider'      => SubscriptionProvider::GOOGLE,

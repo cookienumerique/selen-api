@@ -190,6 +190,15 @@ class Subscription implements SerializableInterface
         return $this;
     }
 
+    public function isValid(): bool
+    {
+        return in_array($this->status, [
+            SubscriptionStatusAndroid::SUBSCRIPTION_STATE_ACTIVE,
+            SubscriptionStatusAndroid::SUBSCRIPTION_STATE_IN_GRACE_PERIOD,
+        ], true)
+            && $this->expiresAt > new \DateTimeImmutable();
+    }
+
     public function serialize(): array
     {
         return [

@@ -11,7 +11,7 @@ use App\Enum\Subscription\SubscriptionBasePlanId;
 
 class GooglePlaySubscriptionVerifier
 {
-  private AndroidPublisher $service;
+  private AndroidPublisher $androidPublisherService;
   private string $packageName;
   public function __construct(string $googleAuthConfigPath, string $packageName)
   {
@@ -19,7 +19,7 @@ class GooglePlaySubscriptionVerifier
     $client->setAuthConfig($googleAuthConfigPath);
     $client->addScope(AndroidPublisher::ANDROIDPUBLISHER);
 
-    $this->service = new AndroidPublisher($client);
+    $this->androidPublisherService = new AndroidPublisher($client);
     $this->packageName = $packageName;
   }
 
@@ -27,14 +27,14 @@ class GooglePlaySubscriptionVerifier
     string $productId,
     string $purchaseToken
   ): SubscriptionPurchaseV2 {
-    // --- MODE DEBUG / MOCK ---
-    if ($purchaseToken === 'debug') {
-      return $this->createMockSubscription($productId);
-    }
+    // // --- MODE DEBUG / MOCK ---
+    // if ($purchaseToken === 'debug') {
+    //   return $this->createMockSubscription($productId);
+    // }
 
     try {
       // Récupération de l'abonnement via l'API V2
-      $subscription = $this->service
+      $subscription = $this->androidPublisherService
         ->purchases_subscriptionsv2
         ->get($this->packageName, $purchaseToken);
     } catch (GoogleException $e) {
@@ -77,7 +77,8 @@ class GooglePlaySubscriptionVerifier
     $lineItem = new \Google\Service\AndroidPublisher\SubscriptionPurchaseLineItem();
     $lineItem->setProductId($productId);
     // Expiration dans 30 jours (en millisecondes pour Google)
-    $lineItem->setExpiryTime((time() + (30 * 86400)) * 1000);
+    // Google expects the expiry time as an RFC3339 timestamp, not milliseconds.
+    $lineItem->setExpiryTime((new \DateTimeImmutable('+30 days'))->format(DATE_RFC3339_EXTENDED));
 
     // On ajoute le BasePlanId (important pour ton Enum !)
     $offerDetails = new \Google\Service\AndroidPublisher\OfferDetails();

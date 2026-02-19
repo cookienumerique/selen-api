@@ -5,6 +5,9 @@ namespace App\Repository;
 use App\Entity\Subscription;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\User;
+use App\Enum\Subscription\SubscriptionStatusAndroid;
+
 
 /**
  * @extends ServiceEntityRepository<Subscription>
@@ -20,5 +23,23 @@ class SubscriptionRepository extends ServiceEntityRepository
     {
         $this->getEntityManager()->persist($subscription);
         $this->getEntityManager()->flush();
+    }
+
+    public function findActiveForUser(User $user): ?Subscription
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.user = :user')
+            ->andWhere('s.status IN (:validStatuses)')
+            ->andWhere('s.expiresAt > :now')
+            ->setParameter('user', $user)
+            ->setParameter('validStatuses', [
+                SubscriptionStatusAndroid::SUBSCRIPTION_STATE_ACTIVE,
+                SubscriptionStatusAndroid::SUBSCRIPTION_STATE_IN_GRACE_PERIOD,
+            ])
+            ->setParameter('now', new \DateTimeImmutable())
+            ->orderBy('s.expiresAt', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

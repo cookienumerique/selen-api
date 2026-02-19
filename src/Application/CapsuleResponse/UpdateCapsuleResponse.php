@@ -7,11 +7,14 @@ use App\Exception\CapsuleResponseNotFoundException;
 use App\Exception\UnauthorizedCapsuleAccessException;
 use App\Entity\User;
 use App\Entity\CapsuleResponse;
+use App\Application\Subscription\UserHasValidSubscription;
+use App\Exception\Subscription\PremiumFeatureRequiredException;
 
 final class UpdateCapsuleResponse
 {
   public function __construct(
     private CapsuleResponseRepository $repository,
+    private UserHasValidSubscription $userHasValidSubscription,
   ) {}
 
   public function execute(
@@ -19,6 +22,12 @@ final class UpdateCapsuleResponse
     string $response,
     User $user
   ): CapsuleResponse {
+
+    $userHasValidSubscription = $this->userHasValidSubscription->execute($user);
+
+    if (!$userHasValidSubscription) {
+      throw new PremiumFeatureRequiredException();
+    }
 
     $capsuleResponse = $this->repository->find($id);
 

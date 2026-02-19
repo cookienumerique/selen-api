@@ -11,6 +11,7 @@ use App\Exception\MissingPayloadException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Controller\ApiController;
 use App\Application\Auth\AuthenticateWithApple;
+use App\Application\Subscription\GetSubscriptionsByUser;
 
 final class AuthController extends ApiController
 {
@@ -19,7 +20,8 @@ final class AuthController extends ApiController
     public function google(
         Request $request,
         AuthenticateWithGoogle $auth,
-        JwtTokenManager $jwt
+        JwtTokenManager $jwt,
+        GetSubscriptionsByUser $getSubscriptionsByUser
     ): JsonResponse {
 
         $data = $request->toArray() ?? [];
@@ -30,10 +32,12 @@ final class AuthController extends ApiController
         }
         $user = $auth->execute($data['idToken']);
         $token = $jwt->create($user);
+        $subscriptions = $getSubscriptionsByUser->execute($user);
 
         return $this->json([
             'token' => $token,
-            'user' => $user->serialize()
+            'user' => $user->serialize(),
+            'subscriptions' => array_map(fn($subscription) => $subscription->serialize(), $subscriptions),
         ], JsonResponse::HTTP_OK);
     }
 
@@ -42,7 +46,8 @@ final class AuthController extends ApiController
     public function apple(
         Request $request,
         AuthenticateWithApple $auth,
-        JwtTokenManager $jwt
+        JwtTokenManager $jwt,
+        GetSubscriptionsByUser $getSubscriptionsByUser
     ): JsonResponse {
 
         $data = $request->toArray() ?? [];
@@ -55,10 +60,11 @@ final class AuthController extends ApiController
         }
         $user = $auth->execute($identityToken, $lastName, $firstName);
         $token = $jwt->create($user);
-
+        $subscriptions = $getSubscriptionsByUser->execute($user);
         return $this->json([
             'token' => $token,
-            'user' => $user->serialize()
+            'user' => $user->serialize(),
+            'subscriptions' => array_map(fn($subscription) => $subscription->serialize(), $subscriptions),
         ], JsonResponse::HTTP_OK);
     }
 }
