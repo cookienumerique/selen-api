@@ -5,6 +5,7 @@
 ### Added
 - user can modify a capsule response
 - purchase subscription on android
+- stat nb capsules responses opened
 
 ## [1.8.0] - 2026-02-11
 

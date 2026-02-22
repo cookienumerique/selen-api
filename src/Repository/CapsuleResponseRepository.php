@@ -35,4 +35,12 @@ class CapsuleResponseRepository extends ServiceEntityRepository
         $this->getEntityManager()->persist($capsuleResponse);
         $this->getEntityManager()->flush();
     }
+
+    public function countOpenedCapsules(): int
+    {
+        return $this->createQueryBuilder('cr')
+            ->select('COUNT(cr.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

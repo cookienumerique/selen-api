@@ -82,7 +82,7 @@ class GooglePlaySubscriptionVerifier
 
     // On ajoute le BasePlanId (important pour ton Enum !)
     $offerDetails = new \Google\Service\AndroidPublisher\OfferDetails();
-    $basePlanId = SubscriptionBasePlanId::SELEN_PREMIUM_MONTHLY->value;
+    $basePlanId = SubscriptionBasePlanId::SELEN_PREMIUM_MONTHLY_FOUNDER->value;
 
     $offerDetails->setBasePlanId($basePlanId);
     $lineItem->setOfferDetails($offerDetails);
