@@ -22,7 +22,7 @@ final class AuthenticateWithGoogle
 
         $googleId = $payload['sub'];
         $email = $payload['email'];
-        $lastName = $payload['family_name'];
+        $lastName = $payload['family_name'] ?? '';
         $firstName = $payload['given_name'];
         $picture = $payload['picture'] ?? '';
 
