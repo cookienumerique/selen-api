@@ -20,10 +20,10 @@ final class AuthenticateWithGoogle
             throw new \ErrorException('Failed to authenticate with Google', 400);
         }
 
-        $googleId = $payload['sub'];
-        $email = $payload['email'];
+        $googleId = $payload['sub'] ?? '';
+        $email = $payload['email'] ?? '';
         $lastName = $payload['family_name'] ?? '';
-        $firstName = $payload['given_name'];
+        $firstName = $payload['given_name'] ?? '';
         $picture = $payload['picture'] ?? '';
 
         $user = $this->userRepository->findByGoogleId($googleId);

@@ -1,5 +1,10 @@
 # CHANGELOG 
 
+## [1.9.1] - 2026-02-22
+
+### Fixed
+- fix payload operator google login if family_name, given_name ... are nulls
+
 ## [1.9.0] - 2026-02-11
 
 ### Added
