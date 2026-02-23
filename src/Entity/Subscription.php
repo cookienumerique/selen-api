@@ -25,11 +25,11 @@ class Subscription implements SerializableInterface
     #[ORM\Column(enumType: SubscriptionProvider::class)]
     private SubscriptionProvider $provider;
 
-    #[ORM\Column(enumType: SubscriptionBasePlanId::class)]
-    private SubscriptionBasePlanId $basePlanId;
+    #[ORM\Column(enumType: SubscriptionBasePlanId::class, nullable: true)]
+    private ?SubscriptionBasePlanId $basePlanId;
 
-    #[ORM\Column(enumType: SubscriptionProductId::class)]
-    private SubscriptionProductId $productId;
+    #[ORM\Column(enumType: SubscriptionProductId::class, nullable: true)]
+    private ?SubscriptionProductId $productId;
 
     #[ORM\Column(unique: true)]
     private string $purchaseToken;
@@ -86,24 +86,24 @@ class Subscription implements SerializableInterface
         return $this;
     }
 
-    public function getBasePlanId(): SubscriptionBasePlanId
+    public function getBasePlanId(): ?SubscriptionBasePlanId
     {
         return $this->basePlanId;
     }
 
-    public function setBasePlanId(SubscriptionBasePlanId $basePlanId): static
+    public function setBasePlanId(?SubscriptionBasePlanId $basePlanId): static
     {
         $this->basePlanId = $basePlanId;
 
         return $this;
     }
 
-    public function getProductId(): SubscriptionProductId
+    public function getProductId(): ?SubscriptionProductId
     {
         return $this->productId;
     }
 
-    public function setProductId(SubscriptionProductId $productId): static
+    public function setProductId(?SubscriptionProductId $productId): static
     {
         $this->productId = $productId;
 

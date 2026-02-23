@@ -1,5 +1,10 @@
 # CHANGELOG 
 
+
+## [1.10.0] - 2022-02-23
+### Added
+
+- a command was created for grant user to premium
 ## [1.9.1] - 2026-02-22
 
 ### Fixed

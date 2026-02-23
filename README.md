@@ -10,3 +10,7 @@ docker exec -ti php_selen php bin/console doctrine:schema:update --dump-sql
 
 ## clean cache
 docker exec -ti php_selen composer dump-autoload && php bin/console cache:clear
+
+## Grant user to premium
+
+docker exec -ti php_selen php bin/console app:grant-premium user@domain.fr 6
