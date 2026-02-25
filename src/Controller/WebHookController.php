@@ -38,7 +38,7 @@ final class WebHookController extends ApiController
       $verifier = new AccessToken();
 
       $payload = $verifier->verify($idToken, [
-        'audience' => 'https://api-selen.cookie-numerique.fr/webhooks/google-play'
+        'audience' => $_ENV['API_URL'] . '/webhooks/google-play'
       ]);
 
       if (!$payload) {
