@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Application\Subscription\GooglePlayNotificationHandler;
 use Psr\Log\LoggerInterface;
+use App\Application\Auth\DecodeAppleJWT;
 
 final class WebHookController extends ApiController
 {
@@ -82,5 +83,53 @@ final class WebHookController extends ApiController
     );
 
     return new JsonResponse(null, 204);
+  }
+
+  #[Route('/webhooks/apple', methods: ['POST'])]
+  public function apple(Request $request, DecodeAppleJWT $decodeAppleJWT, LoggerInterface $logger): JsonResponse
+  {
+    $payload = json_decode($request->getContent(), true);
+
+    $logger->info('Apple WebHook request', [
+      'payload' => json_encode($payload, true)
+    ]);
+
+    if (!isset($payload['signedPayload'])) {
+      return new JsonResponse(['error' => 'Invalid payload'], 400);
+    }
+
+    $signedPayload = $payload['signedPayload'];
+
+    try {
+      $decodedPayload = $decodeAppleJWT->execute($signedPayload);
+
+      $notificationType = $decodedPayload->notificationType ?? null;
+      $data = $decodedPayload->data ?? null;
+
+      if (!$data || !isset($data->signedTransactionInfo)) {
+        return new JsonResponse(['error' => 'Missing transaction info'], 400);
+      }
+
+      $transactionInfo = $decodeAppleJWT->execute($data->signedTransactionInfo);
+
+      // === INFOS IMPORTANTES ===
+      $originalTransactionId = $transactionInfo->originalTransactionId ?? null;
+      $productId = $transactionInfo->productId ?? null;
+      $expiresDate = $transactionInfo->expiresDate ?? null;
+      $environment = $transactionInfo->environment ?? null;
+
+      // Ici pour l’instant on log
+      dump([
+        'notificationType' => $notificationType,
+        'originalTransactionId' => $originalTransactionId,
+        'productId' => $productId,
+        'expiresDate' => $expiresDate,
+        'environment' => $environment,
+      ]);
+
+      return new JsonResponse(null, 204);
+    } catch (\Exception $e) {
+      return new JsonResponse(['error' => $e->getMessage()], 400);
+    }
   }
 }

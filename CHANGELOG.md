@@ -1,5 +1,15 @@
 # CHANGELOG 
 
+## [1.12.0] - 2022-02-25
+### Added
+
+- Payment with apple store
+
+## [1.11.0] - 2022-02-24
+### Fixed
+
+- docker compose config (docker)
+- app version available for ios and android
 
 ## [1.10.0] - 2022-02-23
 ### Added
