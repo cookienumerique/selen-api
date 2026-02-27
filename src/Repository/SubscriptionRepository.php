@@ -6,7 +6,7 @@ use App\Entity\Subscription;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\User;
-use App\Enum\Subscription\SubscriptionStatusAndroid;
+use App\Enum\Subscription\SubscriptionStatus;
 
 
 /**
@@ -33,8 +33,8 @@ class SubscriptionRepository extends ServiceEntityRepository
             ->andWhere('s.expiresAt > :now')
             ->setParameter('user', $user)
             ->setParameter('validStatuses', [
-                SubscriptionStatusAndroid::SUBSCRIPTION_STATE_ACTIVE,
-                SubscriptionStatusAndroid::SUBSCRIPTION_STATE_IN_GRACE_PERIOD,
+                SubscriptionStatus::SUBSCRIPTION_STATE_ACTIVE,
+                SubscriptionStatus::SUBSCRIPTION_STATE_IN_GRACE_PERIOD,
             ])
             ->setParameter('now', new \DateTimeImmutable())
             ->orderBy('s.expiresAt', 'DESC')

@@ -6,7 +6,7 @@ use App\Entity\User;
 use App\Entity\Subscription;
 use App\Repository\SubscriptionRepository;
 use App\Enum\Subscription\SubscriptionProvider;
-use App\Enum\Subscription\SubscriptionStatusAndroid;
+use App\Enum\Subscription\SubscriptionStatus;
 
 final class GrantManualSubscription
 {
@@ -28,7 +28,7 @@ final class GrantManualSubscription
     if ($existing) {
       $existing
         ->setExpiresAt($expiresAt)
-        ->setStatus(SubscriptionStatusAndroid::SUBSCRIPTION_STATE_ACTIVE)
+        ->setStatus(SubscriptionStatus::SUBSCRIPTION_STATE_ACTIVE)
         ->setUpdatedAt(new \DateTimeImmutable());
 
       $this->subscriptionRepository->save($existing);
@@ -40,13 +40,12 @@ final class GrantManualSubscription
     $subscription
       ->setUser($user)
       ->setProvider(SubscriptionProvider::MANUAL)
-      ->setStatus(SubscriptionStatusAndroid::SUBSCRIPTION_STATE_ACTIVE)
+      ->setStatus(SubscriptionStatus::SUBSCRIPTION_STATE_ACTIVE)
       ->setExpiresAt($expiresAt)
       ->setAutoRenew(false)
       ->setProductId(null)
       ->setBasePlanId(null)
-      ->setPurchaseToken('manual_' . uniqid())
-      ->setOriginalTransactionId('manual_' . uniqid())
+      ->setProviderSubscriptionId('manual_' . uniqid())
       ->setCreatedAt($now)
       ->setUpdatedAt($now);
 

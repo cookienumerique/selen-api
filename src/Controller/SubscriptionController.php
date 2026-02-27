@@ -10,12 +10,14 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Exception\MissingPayloadException;
 use Psr\Log\LoggerInterface;
+use App\Application\Subscription\Apple\SubscribeWithApple;
+use App\Application\Subscription\Apple\AppleSubscriptionValidator;
 
 class SubscriptionController extends ApiController
 {
   #[Route('/subscriptions/android', methods: ['POST'])]
   #[IsGranted('ROLE_USER')]
-  public function verifyAndroid(
+  public function subscribeAndroid(
     Request $request,
     UserInterface $user,
     VerifyAndroidSubscription $verifyAndroidSubscription,
@@ -25,7 +27,7 @@ class SubscriptionController extends ApiController
     $productId = $data['productId'] ?? null;
     $purchaseToken = $data['purchaseToken'] ?? null;
 
-    $logger->info('ANDROID SUBSCRIBE REQUEST', [
+    $logger->info('Android subscription request', [
       'payload' => $data
     ]);
 
@@ -43,5 +45,23 @@ class SubscriptionController extends ApiController
       $purchaseToken,
     );
     return $this->respondItem($subscription, JsonResponse::HTTP_CREATED);
+  }
+
+  #[Route('/subscriptions/apple', methods: ['POST'])]
+  #[IsGranted('ROLE_USER')]
+  public function subscribeApple(
+    Request $request,
+    UserInterface $user,
+    SubscribeWithApple $subscribeWithApple,
+    AppleSubscriptionValidator $appleSubscriptionValidator,
+  ): JsonResponse {
+
+    $data = $request->toArray();
+
+    $appleTransactionInfo = $appleSubscriptionValidator->validate($data['receipt']);
+
+    $subscription = $subscribeWithApple->execute($user, $appleTransactionInfo);
+
+    return $this->respondItem($subscription, JsonResponse::HTTP_OK);
   }
 }

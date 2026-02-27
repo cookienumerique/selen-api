@@ -49,5 +49,9 @@ services:
         arguments:
             $googleAuthConfigPath: '%kernel.project_dir%/%env(GOOGLE_SERVICE_ACCOUNT_JSON)%'
             $packageName: '%env(ANDROID_PACKAGE_NAME)%'
+    App\Application\Subscription\Apple\AppleSubscriptionValidator:
+        arguments:
+            $appleBundleId: '%env(APPLE_BUNDLE_ID)%'
+            $environment: '%env(APP_ENV)%'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

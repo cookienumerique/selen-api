@@ -8,7 +8,7 @@ use App\Enum\Subscription\SubscriptionProvider;
 use App\Enum\Subscription\SubscriptionBasePlanId;
 use App\Enum\Subscription\SubscriptionProductId;
 use App\Contract\SerializableInterface;
-use App\Enum\Subscription\SubscriptionStatusAndroid;
+use App\Enum\Subscription\SubscriptionStatus;
 
 #[ORM\Entity(repositoryClass: SubscriptionRepository::class)]
 class Subscription implements SerializableInterface
@@ -31,17 +31,11 @@ class Subscription implements SerializableInterface
     #[ORM\Column(enumType: SubscriptionProductId::class, nullable: true)]
     private ?SubscriptionProductId $productId;
 
-    #[ORM\Column(unique: true)]
-    private string $purchaseToken;
-
-    #[ORM\Column(enumType: SubscriptionStatusAndroid::class)]
-    private SubscriptionStatusAndroid $status;
+    #[ORM\Column(enumType: SubscriptionStatus::class)]
+    private SubscriptionStatus $status;
 
     #[ORM\Column]
     private \DateTimeImmutable $expiresAt;
-
-    #[ORM\Column]
-    private string $originalTransactionId;
 
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
@@ -51,6 +45,9 @@ class Subscription implements SerializableInterface
 
     #[ORM\Column]
     private bool $autoRenew;
+
+    #[ORM\Column(length: 255)]
+    private ?string $providerSubscriptionId = null;
 
     public function __construct()
     {
@@ -110,23 +107,12 @@ class Subscription implements SerializableInterface
         return $this;
     }
 
-    public function getPurchaseToken(): string
-    {
-        return $this->purchaseToken;
-    }
-
-    public function setPurchaseToken(string $purchaseToken): static
-    {
-        $this->purchaseToken = $purchaseToken;
-        return $this;
-    }
-
-    public function getStatus(): SubscriptionStatusAndroid
+    public function getStatus(): SubscriptionStatus
     {
         return $this->status;
     }
 
-    public function setStatus(SubscriptionStatusAndroid $status): static
+    public function setStatus(SubscriptionStatus $status): static
     {
         $this->status = $status;
 
@@ -141,18 +127,6 @@ class Subscription implements SerializableInterface
     public function setExpiresAt(\DateTimeImmutable $expiresAt): static
     {
         $this->expiresAt = $expiresAt;
-
-        return $this;
-    }
-
-    public function getOriginalTransactionId(): string
-    {
-        return $this->originalTransactionId;
-    }
-
-    public function setOriginalTransactionId(string $originalTransactionId): static
-    {
-        $this->originalTransactionId = $originalTransactionId;
 
         return $this;
     }
@@ -193,10 +167,22 @@ class Subscription implements SerializableInterface
     public function isValid(): bool
     {
         return in_array($this->status, [
-            SubscriptionStatusAndroid::SUBSCRIPTION_STATE_ACTIVE,
-            SubscriptionStatusAndroid::SUBSCRIPTION_STATE_IN_GRACE_PERIOD,
+            SubscriptionStatus::SUBSCRIPTION_STATE_ACTIVE,
+            SubscriptionStatus::SUBSCRIPTION_STATE_IN_GRACE_PERIOD,
         ], true)
             && $this->expiresAt > new \DateTimeImmutable();
+    }
+
+    public function getProviderSubscriptionId(): ?string
+    {
+        return $this->providerSubscriptionId;
+    }
+
+    public function setProviderSubscriptionId(string $providerSubscriptionId): static
+    {
+        $this->providerSubscriptionId = $providerSubscriptionId;
+
+        return $this;
     }
 
     public function serialize(): array
@@ -207,10 +193,9 @@ class Subscription implements SerializableInterface
             'provider' => $this->provider,
             'basePlanId' => $this->basePlanId,
             'productId' => $this->productId,
-            'purchaseToken' => $this->purchaseToken,
+            'providerSubscriptionId' => $this->providerSubscriptionId,
             'status' => $this->status,
             'expiresAt' => $this->expiresAt,
-            'originalTransactionId' => $this->originalTransactionId,
             'createdAt' => $this->createdAt,
             'updatedAt' => $this->updatedAt,
             'autoRenew' => $this->autoRenew,
