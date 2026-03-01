@@ -1,15 +1,18 @@
 <?php
 
-namespace App\Application\Subscription;
+namespace App\Application\Subscription\Google;
 
+use App\Exception\InvalidSubscriptionException;
 use Google\Client;
 use Google\Service\AndroidPublisher;
-use App\Exception\InvalidSubscriptionException;
 use Google\Service\AndroidPublisher\SubscriptionPurchaseV2;
 use Google\Exception as GoogleException;
 use App\Enum\Subscription\SubscriptionBasePlanId;
+use Google\Service\AndroidPublisher\AutoRenewingPlan;
+use Google\Service\AndroidPublisher\SubscriptionPurchaseLineItem;
+use Google\Service\AndroidPublisher\OfferDetails;
 
-class GooglePlaySubscriptionVerifier
+class GoogleSubscriptionVerifier
 {
   private AndroidPublisher $androidPublisherService;
   private string $packageName;
@@ -23,14 +26,14 @@ class GooglePlaySubscriptionVerifier
     $this->packageName = $packageName;
   }
 
-  public function verify(
+  public function execute(
     string $productId,
     string $purchaseToken
   ): SubscriptionPurchaseV2 {
-    // // --- MODE DEBUG / MOCK ---
-    // if ($purchaseToken === 'debug') {
-    //   return $this->createMockSubscription($productId);
-    // }
+    // --- MODE DEBUG / MOCK ---
+    if ($purchaseToken === 'debug') {
+      return $this->createMockSubscription($productId);
+    }
 
     try {
       // Récupération de l'abonnement via l'API V2
@@ -74,21 +77,22 @@ class GooglePlaySubscriptionVerifier
     $subscription->setSubscriptionState('SUBSCRIPTION_STATE_ACTIVE');
 
     // On crée le LineItem fictif
-    $lineItem = new \Google\Service\AndroidPublisher\SubscriptionPurchaseLineItem();
+    $lineItem = new SubscriptionPurchaseLineItem();
     $lineItem->setProductId($productId);
     // Expiration dans 30 jours (en millisecondes pour Google)
     // Google expects the expiry time as an RFC3339 timestamp, not milliseconds.
     $lineItem->setExpiryTime((new \DateTimeImmutable('+30 days'))->format(DATE_RFC3339_EXTENDED));
-
+    $autoRenewingPlan = new AutoRenewingPlan();
+    $autoRenewingPlan->setAutoRenewEnabled(true);
+    $lineItem->setAutoRenewingPlan($autoRenewingPlan);
     // On ajoute le BasePlanId (important pour ton Enum !)
-    $offerDetails = new \Google\Service\AndroidPublisher\OfferDetails();
+    $offerDetails = new OfferDetails();
     $basePlanId = SubscriptionBasePlanId::SELEN_PREMIUM_MONTHLY_FOUNDER->value;
 
     $offerDetails->setBasePlanId($basePlanId);
     $lineItem->setOfferDetails($offerDetails);
 
     $subscription->setLineItems([$lineItem]);
-
     return $subscription;
   }
 }

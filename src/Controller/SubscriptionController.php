@@ -8,10 +8,12 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\HttpFoundation\Request;
-use App\Exception\MissingPayloadException;
 use Psr\Log\LoggerInterface;
 use App\Application\Subscription\Apple\SubscribeWithApple;
 use App\Application\Subscription\Apple\AppleSubscriptionValidator;
+use App\Application\Subscription\Google\GoogleSubscriptionVerifier;
+use App\Application\Subscription\Google\SubscribeWithGoogle;
+use App\Application\Subscription\Google\GoogleSubscriptionValidator;
 
 class SubscriptionController extends ApiController
 {
@@ -20,30 +22,27 @@ class SubscriptionController extends ApiController
   public function subscribeAndroid(
     Request $request,
     UserInterface $user,
-    VerifyAndroidSubscription $verifyAndroidSubscription,
+    GoogleSubscriptionValidator $googleSubscriptionValidator,
+    GoogleSubscriptionVerifier $googleSubscriptionVerifier,
+    SubscribeWithGoogle $subscribeWithGoogle,
     LoggerInterface $logger,
   ): JsonResponse {
     $data = $request->toArray();
     $productId = $data['productId'] ?? null;
     $purchaseToken = $data['purchaseToken'] ?? null;
-
-    $logger->info('Android subscription request', [
+    $logger->info('Google subscription request', [
       'payload' => $data
     ]);
 
-    if (!$productId) {
-      throw new MissingPayloadException('productId');
-    }
+    // Verify the payload
+    $googleSubscriptionValidator->execute($data);
 
-    if (!$purchaseToken) {
-      throw new MissingPayloadException('purchaseToken');
-    }
+    // Verify the subscription
+    $googlePurchase = $googleSubscriptionVerifier->execute($productId, $purchaseToken);
 
-    $subscription = $verifyAndroidSubscription->execute(
-      $user,
-      $productId,
-      $purchaseToken,
-    );
+    // Subscribe the user
+    $subscription = $subscribeWithGoogle->execute($user, $googlePurchase, $purchaseToken);
+
     return $this->respondItem($subscription, JsonResponse::HTTP_CREATED);
   }
 
@@ -54,9 +53,14 @@ class SubscriptionController extends ApiController
     UserInterface $user,
     SubscribeWithApple $subscribeWithApple,
     AppleSubscriptionValidator $appleSubscriptionValidator,
+    LoggerInterface $logger,
+
   ): JsonResponse {
 
     $data = $request->toArray();
+    $logger->info('Apple subscription request', [
+      'payload' => $data
+    ]);
 
     $appleTransactionInfo = $appleSubscriptionValidator->validate($data['receipt']);
 
