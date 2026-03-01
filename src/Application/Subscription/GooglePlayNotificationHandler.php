@@ -34,7 +34,7 @@ class GooglePlayNotificationHandler
         case 2: // RENEWED
         case 4: // PURCHASED
         case 7: // RESTARTED
-          $this->googleSubscriptionVerifier->execute(
+          $subscription = $this->googleSubscriptionVerifier->execute(
             $productId,
             $purchaseToken
           );
