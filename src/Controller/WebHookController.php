@@ -10,7 +10,6 @@ use App\Application\Subscription\GooglePlayNotificationHandler;
 use Psr\Log\LoggerInterface;
 use App\Application\Subscription\Apple\HandleAppleWebhook;
 use App\Exception\InvalidSubscriptionException;
-use App\Exception\SubscriptionException;
 
 final class WebHookController extends ApiController
 {

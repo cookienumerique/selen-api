@@ -5,11 +5,12 @@ namespace App\Application\Subscription;
 use App\Repository\SubscriptionRepository;
 use Psr\Log\LoggerInterface;
 use App\Enum\Subscription\SubscriptionStatus;
+use App\Application\Subscription\Google\GoogleSubscriptionVerifier;
 
 class GooglePlayNotificationHandler
 {
   public function __construct(
-    private VerifyAndroidSubscription $verifyAndroidSubscription,
+    private GoogleSubscriptionVerifier $googleSubscriptionVerifier,
     private SubscriptionRepository $subscriptionRepository,
     private LoggerInterface $logger
   ) {}
@@ -30,8 +31,7 @@ class GooglePlayNotificationHandler
         case 2: // SUBSCRIPTION_PURCHASED
         case 7: // SUBSCRIPTION_RENEWED
         case 1: // SUBSCRIPTION_RECOVERED 
-          $this->verifyAndroidSubscription->execute(
-            $subscription->getUser(),
+          $this->googleSubscriptionVerifier->execute(
             $productId,
             $purchaseToken
           );
