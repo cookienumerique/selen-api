@@ -62,9 +62,8 @@ final class WebHookController extends ApiController
     }
 
     // 2️⃣ Décodage du payload Pub/Sub
-    $outer = json_decode($request->getContent(), true);
-    $inner = json_decode($outer['content'] ?? '{}', true);
-    $subscriptionNotification = $inner['subscriptionNotification'] ?? null;
+    $requestContent = json_decode($request->getContent(), true);
+    $subscriptionNotification = $requestContent['subscriptionNotification'] ?? null;
 
     if (!$subscriptionNotification) {
       return new JsonResponse(['error' => 'Not a subscription notification'], 200);
