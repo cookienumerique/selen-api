@@ -28,29 +28,50 @@ class GooglePlayNotificationHandler
       }
 
       switch ($notificationType) {
-        case 2: // SUBSCRIPTION_PURCHASED
-        case 7: // SUBSCRIPTION_RENEWED
-        case 1: // SUBSCRIPTION_RECOVERED 
+
+        // Achat / renewal / recovery
+        case 1: // RECOVERED
+        case 2: // RENEWED
+        case 4: // PURCHASED
+        case 7: // RESTARTED
           $this->googleSubscriptionVerifier->execute(
             $productId,
             $purchaseToken
           );
-          $this->logger->info('Subscription updated/renewed');
+          $this->logger->info('Subscription verified and updated');
           return;
-        case 3: // SUBSCRIPTION_CANCELED
+
+        case 3: // CANCELED (auto-renew off)
           $subscription->setAutoRenew(false);
-          $subscription->setStatus(SubscriptionStatus::SUBSCRIPTION_STATE_CANCELED);
           break;
 
-        case 5: // SUBSCRIPTION_EXPIRED
+        case 5: // ON_HOLD (payment failed)
+          $subscription->setStatus(SubscriptionStatus::SUBSCRIPTION_STATE_ON_HOLD);
+          break;
+
+        case 6: // IN_GRACE_PERIOD
+          $subscription->setStatus(SubscriptionStatus::SUBSCRIPTION_STATE_IN_GRACE_PERIOD);
+          break;
+
+        case 10: // PAUSED
+          $subscription->setStatus(SubscriptionStatus::SUBSCRIPTION_STATE_PAUSED);
+          break;
+
+        case 12: // REVOKED (refund / fraud)
+          $subscription->setStatus(SubscriptionStatus::SUBSCRIPTION_STATE_REVOKED);
+          $subscription->setAutoRenew(false);
+          break;
+
+        case 13: // EXPIRED
           $subscription->setStatus(SubscriptionStatus::SUBSCRIPTION_STATE_EXPIRED);
           $subscription->setAutoRenew(false);
           break;
-        case 12: // SUBSCRIPTION_REVOKED
-          // On coupe l'accès immédiatement
-          $subscription->setStatus(SubscriptionStatus::SUBSCRIPTION_STATE_EXPIRED);
-          $subscription->setAutoRenew(false);
-          break;
+
+        default:
+          $this->logger->warning('Unhandled Google RTDN notification type', [
+            'type' => $notificationType
+          ]);
+          return;
       }
       $this->subscriptionRepository->save($subscription);
     } catch (\Throwable $e) {
