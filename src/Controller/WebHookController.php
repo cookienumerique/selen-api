@@ -12,7 +12,7 @@ use App\Exception\InvalidSubscriptionException;
 use App\Application\Subscription\GoogleWebhook\GoogleWebhookAuthenticator;
 use App\Application\Subscription\GoogleWebhook\GooglePubSubDecoder;
 use App\Application\Subscription\GoogleWebhook\GoogleWebhookVerifier;
-
+use Psr\Log\LoggerInterface;
 final class WebHookController extends ApiController
 {
   #[Route('/webhooks/google-play', methods: ['POST'])]
@@ -22,13 +22,17 @@ final class WebHookController extends ApiController
     GoogleWebhookVerifier $googleWebhookVerifier,
     GooglePubSubDecoder $googlePubSubDecoder,
     GooglePlayNotificationHandler $googlePlayNotificationHandler,
+    LoggerInterface $logger
   ): JsonResponse {
 
     $idToken = $googleWebhookAuthenticator->execute($request);
+    $logger->info('Google Webhook received', [
+      'idToken' => $idToken
+    ]);
     $googleWebhookVerifier->execute($idToken);
-
+    $logger->info('Google Webhook verified');
     $developperNotification = $googlePubSubDecoder->execute($request);
-
+    $logger->info('Google Webhook decoded');
     if (!$developperNotification['subscriptionNotification']) {
       return new JsonResponse(null, 204);
     }
