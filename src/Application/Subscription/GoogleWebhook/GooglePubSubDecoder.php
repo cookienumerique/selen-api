@@ -16,6 +16,6 @@ class GooglePubSubDecoder
         $this->logger->info('Google Webhook decoded', [
             'body' => $body
         ]);
-        return $body['content'] ?? null;
+        return $body ?? null;
     }
 }
