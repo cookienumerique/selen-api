@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use Google\Auth\AccessToken;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -10,77 +9,30 @@ use App\Application\Subscription\GooglePlayNotificationHandler;
 use Psr\Log\LoggerInterface;
 use App\Application\Subscription\Apple\HandleAppleWebhook;
 use App\Exception\InvalidSubscriptionException;
+use App\Application\Subscription\GoogleWebhook\GoogleWebhookAuthenticator;
+use App\Application\Subscription\GoogleWebhook\GooglePubSubDecoder;
+use App\Application\Subscription\GoogleWebhook\GoogleWebhookVerifier;
 
 final class WebHookController extends ApiController
 {
   #[Route('/webhooks/google-play', methods: ['POST'])]
   public function googlePlay(
     Request $request,
+    GoogleWebhookAuthenticator $googleWebhookAuthenticator,
+    GoogleWebhookVerifier $googleWebhookVerifier,
+    GooglePubSubDecoder $googlePubSubDecoder,
     GooglePlayNotificationHandler $googlePlayNotificationHandler,
-    LoggerInterface $logger
   ): JsonResponse {
 
-    // 1️⃣ Vérification du JWT envoyé par Pub/Sub
-    $authHeader = $request->headers->get('Authorization');
-    $logger->info('Authorization header', [
-      'authHeader' => json_encode($authHeader, true)
-    ]);
-    $logger->info('Request content', [
-      'content' => $request->getContent()
-    ]);
-    if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
-      return new JsonResponse(['error' => 'Missing Authorization header'], 401);
+    $idToken = $googleWebhookAuthenticator->execute($request);
+    $googleWebhookVerifier->execute($idToken);
+
+    $developperNotification = $googlePubSubDecoder->execute($request);
+
+    if (!$developperNotification['subscriptionNotification']) {
+      return new JsonResponse(null, 204);
     }
-
-    $idToken = str_replace('Bearer ', '', $authHeader);
-    $logger->info('Google Play WebHook request', [
-      'idToken' => $idToken
-    ]);
-    try {
-      $verifier = new AccessToken();
-
-      $payload = $verifier->verify($idToken, [
-        'audience' => $_ENV['API_URL'] . '/webhooks/google-play'
-      ]);
-
-      if (!$payload) {
-        throw new \Exception('Invalid token payload');
-      }
-
-      $issuer = $payload['iss'] ?? '';
-      if (!in_array($issuer, ['https://accounts.google.com', 'accounts.google.com'])) {
-        throw new \Exception('Invalid issuer');
-      }
-    } catch (\Exception $e) {
-      $logger->error('Authentication failed', [
-        'error' => $e->getMessage()
-      ]);
-      return new JsonResponse([
-        'error' => 'Authentication failed',
-        'details' => $e->getMessage()
-      ], 403);
-    }
-
-    // 2️⃣ Décodage du payload Pub/Sub
-    $requestContent = json_decode($request->getContent(), true);
-    $subscriptionNotification = $requestContent['content']['subscriptionNotification'] ?? null;
-
-    if (!$subscriptionNotification) {
-      return new JsonResponse(['error' => 'Not a subscription notification'], 200);
-    }
-    $purchaseToken = $subscriptionNotification['purchaseToken'] ?? null;
-    $productId = $subscriptionNotification['subscriptionId'] ?? null;
-    $notificationType = $subscriptionNotification['notificationType'] ?? null;
-
-    if (!$purchaseToken || !$productId) {
-      return new JsonResponse(['error' => 'Missing purchaseToken'], 400);
-    }
-
-    $googlePlayNotificationHandler->execute(
-      $purchaseToken,
-      $productId,
-      $notificationType
-    );
+    $googlePlayNotificationHandler->execute($developperNotification['subscriptionNotification']);
 
     return new JsonResponse(null, 204);
   }

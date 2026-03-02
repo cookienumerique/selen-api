@@ -31,9 +31,9 @@ class GoogleSubscriptionVerifier
     string $purchaseToken
   ): SubscriptionPurchaseV2 {
     // --- MODE DEBUG / MOCK ---
-    if ($purchaseToken === 'debug') {
-      return $this->createMockSubscription($productId);
-    }
+    // if ($purchaseToken === 'debug') {
+    //   return $this->createMockSubscription($productId);
+    // }
 
     try {
       // Récupération de l'abonnement via l'API V2
@@ -42,11 +42,6 @@ class GoogleSubscriptionVerifier
         ->get($this->packageName, $purchaseToken);
     } catch (GoogleException $e) {
       throw new InvalidSubscriptionException("Google API Error: " . $e->getMessage());
-    }
-
-    // 1. Vérification du statut
-    if ($subscription->getSubscriptionState() !== 'SUBSCRIPTION_STATE_ACTIVE') {
-      throw new InvalidSubscriptionException("Subscription not active.");
     }
 
     $lineItems = $subscription->getLineItems();
