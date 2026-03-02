@@ -6,13 +6,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Application\Subscription\GooglePlayNotificationHandler;
-use Psr\Log\LoggerInterface;
 use App\Application\Subscription\Apple\HandleAppleWebhook;
 use App\Exception\InvalidSubscriptionException;
 use App\Application\Subscription\GoogleWebhook\GoogleWebhookAuthenticator;
 use App\Application\Subscription\GoogleWebhook\GooglePubSubDecoder;
 use App\Application\Subscription\GoogleWebhook\GoogleWebhookVerifier;
 use Psr\Log\LoggerInterface;
+
 final class WebHookController extends ApiController
 {
   #[Route('/webhooks/google-play', methods: ['POST'])]
