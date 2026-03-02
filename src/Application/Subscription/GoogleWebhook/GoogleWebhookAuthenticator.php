@@ -15,7 +15,6 @@ class GoogleWebhookAuthenticator
       throw new InvalidWebhookTokenException('Missing Authorization header');
     }
 
-    $idToken = substr($authHeader, 7);
     return str_replace('Bearer ', '', $authHeader);
   }
 }

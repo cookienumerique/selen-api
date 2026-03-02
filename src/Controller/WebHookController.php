@@ -6,12 +6,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Application\Subscription\GooglePlayNotificationHandler;
-use App\Application\Subscription\Apple\HandleAppleWebhook;
-use App\Exception\InvalidSubscriptionException;
 use App\Application\Subscription\GoogleWebhook\GoogleWebhookAuthenticator;
 use App\Application\Subscription\GoogleWebhook\GooglePubSubDecoder;
 use App\Application\Subscription\GoogleWebhook\GoogleWebhookVerifier;
 use Psr\Log\LoggerInterface;
+use App\Application\Subscription\Apple\AppleWebhookHandler;
+use App\Application\Subscription\AppleWebhook\AppleWebhookVerifier;
+use App\Exception\InvalidSubscriptionException;
 
 final class WebHookController extends ApiController
 {
@@ -33,10 +34,13 @@ final class WebHookController extends ApiController
     $logger->info('Google Webhook verified');
     $developperNotification = $googlePubSubDecoder->execute($request);
     $logger->info('Google Webhook decoded');
-    if (!$developperNotification['subscriptionNotification']) {
-      return new JsonResponse(null, 204);
+
+    if (isset($developperNotification['subscriptionNotification'])) {
+      $googlePlayNotificationHandler->handleSubscription($developperNotification['subscriptionNotification']);
     }
-    $googlePlayNotificationHandler->execute($developperNotification['subscriptionNotification']);
+    if (isset($developperNotification['voidedPurchaseNotification'])) {
+      $googlePlayNotificationHandler->handleVoidedPurchase($developperNotification['voidedPurchaseNotification']);
+    }
 
     return new JsonResponse(null, 204);
   }
@@ -44,35 +48,31 @@ final class WebHookController extends ApiController
   #[Route('/webhooks/apple', methods: ['POST'])]
   public function apple(
     Request $request,
-    HandleAppleWebhook $handleAppleWebhook,
+    AppleWebhookHandler $handleAppleWebhook,
+    AppleWebhookVerifier $appleWebhookVerifier,
     LoggerInterface $logger
   ): JsonResponse {
 
-    $content = $request->getContent();
-    $payload = json_decode($content, true);
+    $body = $request->getContent();
 
-    $logger->info('Apple Webhook received', [
-      'payload_keys' => array_keys($payload ?? [])
+    $logger->info('Apple webhook received', [
+      'body' => $body
     ]);
 
-    // Apple envoie un champ "signedPayload" qui contient tout le message en JWS
+    $payload = json_decode($body, true);
+
     if (!isset($payload['signedPayload'])) {
       throw new InvalidSubscriptionException('Missing signedPayload');
     }
 
-    try {
-      $handleAppleWebhook->execute($payload);
+    $signedPayload = $appleWebhookVerifier->execute($payload['signedPayload']);
 
-      $logger->info('Apple Webhook processed successfully');
+    $logger->info('Apple Webhook signedPayload received', [
+      'signedPayload' => $signedPayload
+    ]);
 
-      return new JsonResponse(null, 204);
-    } catch (\Exception $e) {
-      $logger->error('Apple Webhook processing failed', [
-        'error' => $e->getMessage(),
-        'trace' => $e->getTraceAsString()
-      ]);
+    $handleAppleWebhook->execute($payload);
 
-      return new JsonResponse(['error' => $e->getMessage()], 200);
-    }
+    return new JsonResponse(null, 204);
   }
 }

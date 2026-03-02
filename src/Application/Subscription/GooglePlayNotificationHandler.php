@@ -21,7 +21,7 @@ class GooglePlayNotificationHandler
   /**
    * Handle Google Real-Time Developer Notification (RTDN)
    */
-  public function execute(array $subscriptionNotification): void
+  public function handleSubscription(array $subscriptionNotification): void
   {
     try {
       //   "subscriptionNotification" => array:4 [
@@ -140,5 +140,38 @@ class GooglePlayNotificationHandler
         'error' => $e->getMessage(),
       ]);
     }
+  }
+
+  public function handleVoidedPurchase(array $voidedPurchaseNotification): void
+  {
+    $purchaseToken = $voidedPurchaseNotification['purchaseToken'] ?? null;
+
+    if (!$purchaseToken) {
+      return;
+    }
+
+    $subscription = $this->subscriptionRepository->findOneBy([
+      'providerSubscriptionId' => $purchaseToken,
+      'provider' => SubscriptionProvider::GOOGLE,
+    ]);
+
+    if (!$subscription) {
+      $this->logger->warning('Voided purchase but subscription not found', [
+        'token' => $purchaseToken
+      ]);
+      return;
+    }
+
+    $subscription
+      ->setStatus(SubscriptionStatus::SUBSCRIPTION_STATE_REVOKED)
+      ->setAutoRenew(false)
+      ->setExpiresAt(new \DateTimeImmutable())
+      ->setUpdatedAt(new \DateTimeImmutable());
+
+    $this->subscriptionRepository->save($subscription);
+
+    $this->logger->warning('Subscription revoked due to voided purchase', [
+      'token' => $purchaseToken
+    ]);
   }
 }
