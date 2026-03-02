@@ -27,7 +27,7 @@ class GooglePlayNotificationHandler
       //   "subscriptionNotification" => array:4 [
       //     "version" => "1.0"
       //     "notificationType" => 11
-      //     "purchaseToken" => "hopeciihinoglghpjfebdini.AO-J1OyQQTO6WoZ1uxjHj79mo9BOlZVllnHSg2JLbHcfKG1FMm3thR4DnC3DPBj2W21_um7K7hH5xJGbY2KqC4v7PWSkGHWwyVe2Muu1EFhJ1g8gFakd8Ug"
+      //     "purchaseToken" => "test"
       //     "subscriptionId" => "selen_premium"
       //   ]
       $purchaseToken = $subscriptionNotification['purchaseToken'];
