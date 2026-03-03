@@ -8,7 +8,7 @@ use App\Repository\SubscriptionRepository;
 use App\Enum\Subscription\SubscriptionProvider;
 use Psr\Log\LoggerInterface;
 
-final class HandleAppleWebhook
+final class AppleWebhookHandler
 {
   public function __construct(
     private DecodeAppleJWT $decodeAppleJWT,

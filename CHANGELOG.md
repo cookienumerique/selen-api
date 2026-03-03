@@ -1,5 +1,10 @@
 # CHANGELOG 
 
+## [1.13.0] - 2022-03-03
+### Added
+
+- version android 1.13.0
+
 ## [1.12.0] - 2022-02-25
 ### Added
 
