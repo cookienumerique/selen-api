@@ -1,5 +1,10 @@
 # CHANGELOG 
 
+## [1.14.0] - 2022-03-05
+### Added
+
+- the capsule response is returned after creation
+
 ## [1.13.0] - 2022-03-03
 ### Added
 

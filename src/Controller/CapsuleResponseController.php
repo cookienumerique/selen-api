@@ -42,9 +42,9 @@ class CapsuleResponseController extends ApiController
 
     $capsule = $getCapsule->execute($capsuleId);
 
-    $createCapsuleResponse->execute($response, $author, $capsule);
+    $capsuleResponse = $createCapsuleResponse->execute($response, $author, $capsule);
 
-    return $this->respondNoContent();
+    return $this->respondItem($capsuleResponse, JsonResponse::HTTP_OK);
   }
 
   #[Route('/capsules-response', methods: ['GET'])]
