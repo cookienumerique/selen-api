@@ -1,5 +1,10 @@
 # CHANGELOG 
 
+## [1.15.0] - 2022-03-06
+### Added
+
+- implement IA in capsule reponse
+
 ## [1.14.0] - 2022-03-05
 ### Added
 

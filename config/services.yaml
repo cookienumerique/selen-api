@@ -53,5 +53,6 @@ services:
         arguments:
             $appleBundleId: '%env(APPLE_BUNDLE_ID)%'
             $environment: '%env(APP_ENV)%'
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    App\Application\Ai\OpenAiClient:
+        arguments:
+            $apiKey: '%env(OPENAI_API_KEY)%'

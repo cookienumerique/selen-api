@@ -18,6 +18,9 @@ class CapsuleResponse implements SerializableInterface
     #[ORM\Column(type: Types::TEXT)]
     private ?string $response = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $aiResponse = null;
+
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $author = null;
@@ -82,11 +85,24 @@ class CapsuleResponse implements SerializableInterface
         return $this;
     }
 
+    public function getAiResponse(): ?string
+    {
+        return $this->aiResponse;
+    }
+
+    public function setAiResponse(?string $aiResponse): static
+    {
+        $this->aiResponse = $aiResponse;
+
+        return $this;
+    }
+
     public function serialize(): array
     {
         return [
             'id' => $this->id,
             'response' => $this->response,
+            'aiResponse' => $this->aiResponse,
             'author' => $this->author->serialize(),
             'createdAt' => $this->createdAt,
             'capsule' => $this->capsule->serialize(),
