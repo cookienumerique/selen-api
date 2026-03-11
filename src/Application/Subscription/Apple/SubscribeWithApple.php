@@ -31,7 +31,7 @@ final class SubscribeWithApple
     $status = $appleTransactionInfo->getStatus();
 
     $subscription = $this->subscriptionRepository->findOneBy([
-      'provider'      => SubscriptionProvider::APPLE,
+      'provider' => SubscriptionProvider::APPLE,
       'providerSubscriptionId' => $appleTransactionInfo->originalTransactionId,
     ]);
 

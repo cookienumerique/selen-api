@@ -1,5 +1,11 @@
 # CHANGELOG 
 
+## [1.16.1] - 2022-03-11
+### Fixed
+
+- remove sandbox logic for checking apple receipt
+- rename SubscriptionBasePlanId with new offers
+
 ## [1.16.0] - 2022-03-11
 ### Added
 

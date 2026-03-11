@@ -30,14 +30,14 @@ final class AppleSubscriptionValidator
       throw new InvalidSubscriptionException('Invalid bundle');
     }
 
-    if (
-      strtolower($decoded->environment) === 'sandbox'
-      && $this->environment === 'production'
-    ) {
-      throw new InvalidSubscriptionException(
-        'Sandbox receipt not allowed in production'
-      );
-    }
+    // if (
+    //   strtolower($decoded->environment) === 'sandbox'
+    //   && $this->environment === 'production'
+    // ) {
+    //   throw new InvalidSubscriptionException(
+    //     'Sandbox receipt not allowed in production'
+    //   );
+    // }
 
     return $decoded;
   }

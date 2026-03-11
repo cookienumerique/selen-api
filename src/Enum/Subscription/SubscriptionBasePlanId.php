@@ -6,8 +6,8 @@ enum SubscriptionBasePlanId: string
 {
   case SELEN_PREMIUM_MONTHLY = 'selen-premium-monthly';
   case SELEN_PREMIUM_YEARLY = 'selen-premium-yearly';
-  case SELEN_PREMIUM_MONTHLY_FOUNDER = 'selen-premium-monthly-founder';
-  case SELEN_PREMIUM_YEARLY_FOUNDER = 'selen-premium-yearly-founder';
+  case SELEN_PREMIUM_MONTHLY_FOUNDER = 'selen-infini-monthly-founder';
+  case SELEN_PREMIUM_YEARLY_FOUNDER = 'selen-infini-yearly-founder';
 
   /**
    * @description Convert Apple product ID to subscription base plan ID (e.g. selen_premium_monthly -> selen-premium-monthly)
