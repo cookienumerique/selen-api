@@ -1,5 +1,10 @@
 # CHANGELOG 
 
+## [1.16.0] - 2022-03-11
+### Added
+
+- add endpoint for sub theme capsule progress
+
 ## [1.15.0] - 2022-03-06
 ### Added
 
