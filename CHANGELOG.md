@@ -5,6 +5,7 @@
 
 - remove sandbox logic for checking apple receipt
 - rename SubscriptionBasePlanId with new offers
+- add contrainte title capsule and code theme and sub theme
 
 ## [1.16.0] - 2022-03-11
 ### Added

@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Contract\SerializableInterface;
 
 #[ORM\Entity(repositoryClass: CapsuleRepository::class)]
+#[ORM\UniqueConstraint(name: 'uq_capsule_title_content', columns: ['title', 'content'])]
+
 class Capsule implements SerializableInterface
 {
     #[ORM\Id]

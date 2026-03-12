@@ -8,14 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ThemeCapsuleRepository::class)]
-#[ORM\Table(
-    uniqueConstraints: [
-        new ORM\UniqueConstraint(
-            name: 'uniq_theme_capsule_code',
-            columns: ['code']
-        )
-    ]
-)]
+#[ORM\UniqueConstraint(name: 'uq_theme_capsule_code', columns: ['code'])]
 class ThemeCapsule
 {
     #[ORM\Id]
