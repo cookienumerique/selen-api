@@ -9,13 +9,13 @@
 parameters:
     app_version:
         ios:
-            latest: '1.11.0'
-            minRequired: '1.11.0'
-            forceUpdate: false
+            latest: '1.17.1'
+            minRequired: '1.17.1'
+            forceUpdate: true
             storeUrl: 'https://apps.apple.com/app/id6758859179'
 
         android:
-            latest: '1.19.0'
+            latest: '1.20.0'
             minRequired: '1.19.0'
             forceUpdate: true
             storeUrl: 'market://details?id=com.cookienumerique.selen'
