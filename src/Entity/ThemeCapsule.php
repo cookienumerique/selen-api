@@ -6,10 +6,11 @@ use App\Repository\ThemeCapsuleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Contract\SerializableInterface;
 
 #[ORM\Entity(repositoryClass: ThemeCapsuleRepository::class)]
 #[ORM\UniqueConstraint(name: 'uq_theme_capsule_code', columns: ['code'])]
-class ThemeCapsule
+class ThemeCapsule implements SerializableInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -89,5 +90,14 @@ class ThemeCapsule
         }
 
         return $this;
+    }
+
+    public function serialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'code' => $this->code,
+            'name' => $this->name,
+        ];
     }
 }

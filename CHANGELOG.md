@@ -1,5 +1,10 @@
 # CHANGELOG 
 
+## [1.17.0] - 2022-03-16
+### Added
+
+- update response ai when response is updated
+
 ## [1.16.1] - 2022-03-11
 ### Fixed
 

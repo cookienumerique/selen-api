@@ -131,6 +131,7 @@ class SubThemeCapsule implements SerializableInterface
             'code' => $this->code,
             'name' => $this->name,
             'image' => $this->image,
+            'themeCapsule' => $this->themeCapsule->serialize(),
         ];
     }
 }
