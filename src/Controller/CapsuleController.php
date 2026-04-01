@@ -25,9 +25,10 @@ final class CapsuleController extends ApiController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/capsules/ranked', name: 'api_capsules_ranked', methods: ['GET'])]
-    public function getRankedCapsules(ListCapsulesRanked $listCapsulesRanked): JsonResponse
+    public function getRankedCapsules(Request $request, ListCapsulesRanked $listCapsulesRanked): JsonResponse
     {
-        $capsules = $listCapsulesRanked->execute();
+        $params = $request->query->all();
+        $capsules = $listCapsulesRanked->execute($params);
 
         return $this->respondItems($capsules, JsonResponse::HTTP_OK);
     }

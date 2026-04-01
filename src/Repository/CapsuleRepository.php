@@ -35,11 +35,20 @@ class CapsuleRepository extends ServiceEntityRepository
 
     /**
      * @description Find the ranked capsules ids (ordered by skip rate and total characters length)
-     * @return int[]
+     * @param array $criteria
+     * @return @
      */
-    public function findRankedIds(): array
+    public function findRankedIds($criteria = []): array
     {
         $conn = $this->getEntityManager()->getConnection();
+
+        $whereClause = '';
+        $params = [];
+
+        if (!empty($criteria['subThemeCapsuleId'])) {
+            $whereClause = 'WHERE c.sub_theme_capsule_id = :subThemeId';
+            $params['subThemeId'] = (int) $criteria['subThemeCapsuleId'];
+        }
 
         $sql = <<<SQL
 SELECT 
@@ -51,6 +60,7 @@ ROUND(100.0 * SUM(CASE WHEN cr.response IS NULL OR TRIM(cr.response) = '' THEN 1
 ROUND(AVG(CASE WHEN cr.response IS NOT NULL AND TRIM(cr.response) != '' THEN LENGTH(cr.response) ELSE NULL END), 1) as total_chars_length
 FROM capsule c
 LEFT JOIN capsule_response cr ON cr.capsule_id = c.id
+{$whereClause}
 GROUP BY c.id
 ORDER BY 
     CASE WHEN COUNT(cr.id) >= 5 THEN 0 ELSE 1 END,  
@@ -58,16 +68,26 @@ ORDER BY
     total_chars_length DESC NULLS LAST;
 SQL;
 
-        return array_column($conn->fetchAllAssociative($sql), 'id');
+        return array_column(
+            $conn->fetchAllAssociative($sql, $params),
+            'id'
+        );
     }
 
-    public function findRanked(): array
+    public function findRanked(array $criteria = []): array
     {
-        $rankedCapsulesIds = $this->findRankedIds();
+        $rankedIds = $this->findRankedIds($criteria);
 
-        if (empty($rankedCapsulesIds)) return [];
+        if (empty($rankedIds)) {
+            return [];
+        }
 
-        $capsules = $this->findBy(['id' => $rankedCapsulesIds]);
+        $entityCriteria = ['id' => $rankedIds];
+
+        if (!empty($criteria['subThemeCapsuleId'])) {
+            $entityCriteria['subThemeCapsule'] = $criteria['subThemeCapsuleId'];
+        }
+        $capsules = $this->findBy($entityCriteria);
 
         $indexed = [];
         foreach ($capsules as $capsule) {
@@ -75,7 +95,7 @@ SQL;
         }
 
         return array_values(array_filter(
-            array_map(fn($id) => $indexed[$id] ?? null, $rankedCapsulesIds)
+            array_map(fn($id) => $indexed[$id] ?? null, $rankedIds)
         ));
     }
 }

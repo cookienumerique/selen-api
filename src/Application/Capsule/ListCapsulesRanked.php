@@ -3,7 +3,6 @@
 namespace App\Application\Capsule;
 
 use App\Repository\CapsuleRepository;
-use App\Entity\Capsule;
 
 final class ListCapsulesRanked
 {
@@ -11,11 +10,17 @@ final class ListCapsulesRanked
     private CapsuleRepository $capsuleRepository
   ) {}
 
-  /**
-   * @return Capsule[]
-   */
-  public function execute(): array
+  public function execute(array $criteria = []): array
   {
-    return $this->capsuleRepository->findRanked();
+    $this->validateCriteria($criteria);
+
+    return $this->capsuleRepository->findRanked($criteria);
+  }
+
+  private function validateCriteria(array $criteria): void
+  {
+    if (isset($criteria['subThemeCapsuleId']) && $criteria['subThemeCapsuleId'] < 1) {
+      throw new \InvalidArgumentException('Invalid subThemeId');
+    }
   }
 }
