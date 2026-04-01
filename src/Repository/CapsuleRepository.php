@@ -32,4 +32,47 @@ class CapsuleRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * @description Find the ranked capsules ids (ordered by skip rate and total characters length)
+     * @return int[]
+     */
+    public function findRankedIds(): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = <<<SQL
+SELECT 
+c.id,
+COUNT(cr.id) as total_responses,
+SUM(CASE WHEN cr.response IS NULL OR TRIM(cr.response) = '' THEN 1 ELSE 0 END) as skips,
+SUM(CASE WHEN cr.response IS NOT NULL AND TRIM(cr.response) != '' THEN 1 ELSE 0 END) as filled,
+ROUND(100.0 * SUM(CASE WHEN cr.response IS NULL OR TRIM(cr.response) = '' THEN 1 ELSE 0 END) / NULLIF(COUNT(cr.id), 0), 1) as skip_rate,
+ROUND(AVG(CASE WHEN cr.response IS NOT NULL AND TRIM(cr.response) != '' THEN LENGTH(cr.response) ELSE NULL END), 1) as total_chars_length
+FROM capsule c
+LEFT JOIN capsule_response cr ON cr.capsule_id = c.id
+GROUP BY c.id
+ORDER BY skip_rate ASC, total_chars_length DESC;
+SQL;
+
+        return array_column($conn->fetchAllAssociative($sql), 'id');
+    }
+
+    public function findRanked(): array
+    {
+        $rankedCapsulesIds = $this->findRankedIds();
+
+        if (empty($rankedCapsulesIds)) return [];
+
+        $capsules = $this->findBy(['id' => $rankedCapsulesIds]);
+
+        $indexed = [];
+        foreach ($capsules as $capsule) {
+            $indexed[$capsule->getId()] = $capsule;
+        }
+
+        return array_values(array_filter(
+            array_map(fn($id) => $indexed[$id] ?? null, $rankedCapsulesIds)
+        ));
+    }
 }

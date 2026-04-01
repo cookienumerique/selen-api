@@ -1,5 +1,10 @@
 # CHANGELOG 
 
+## [1.18.0] - 2022-04-01
+### Added
+
+- create endpoint for capsules/ranked
+
 ## [1.17.0] - 2022-03-16
 ### Added
 

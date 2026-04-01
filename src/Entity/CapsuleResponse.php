@@ -26,7 +26,7 @@ class CapsuleResponse implements SerializableInterface
     private ?User $author = null;
 
     #[ORM\ManyToOne(inversedBy: 'capsuleResponses')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Capsule $capsule = null;
 
     #[ORM\Column]
