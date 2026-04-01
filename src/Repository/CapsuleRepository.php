@@ -52,7 +52,10 @@ ROUND(AVG(CASE WHEN cr.response IS NOT NULL AND TRIM(cr.response) != '' THEN LEN
 FROM capsule c
 LEFT JOIN capsule_response cr ON cr.capsule_id = c.id
 GROUP BY c.id
-ORDER BY skip_rate ASC, total_chars_length DESC;
+ORDER BY 
+    CASE WHEN COUNT(cr.id) >= 5 THEN 0 ELSE 1 END,  
+    skip_rate ASC NULLS LAST, 
+    total_chars_length DESC NULLS LAST;
 SQL;
 
         return array_column($conn->fetchAllAssociative($sql), 'id');
