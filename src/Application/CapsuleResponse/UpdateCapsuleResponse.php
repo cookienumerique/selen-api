@@ -9,14 +9,14 @@ use App\Entity\User;
 use App\Entity\CapsuleResponse;
 use App\Application\Subscription\UserHasValidSubscription;
 use App\Exception\Subscription\PremiumFeatureRequiredException;
-use App\Application\Ai\GenerateAIResponse;
+use App\Application\Ai\GenerateAiResponseForCapsuleResponse;
 
 final class UpdateCapsuleResponse
 {
   public function __construct(
     private CapsuleResponseRepository $repository,
     private UserHasValidSubscription $userHasValidSubscription,
-    private GenerateAIResponse $generateAIResponse
+    private GenerateAiResponseForCapsuleResponse $generateAiResponseForCapsuleResponse
   ) {}
 
   public function execute(
@@ -40,7 +40,7 @@ final class UpdateCapsuleResponse
       throw new UnauthorizedCapsuleAccessException();
     }
 
-    $aiResponse = $this->generateAIResponse->execute($capsuleResponse->getCapsule()->getContent(), $response, $user);
+    $aiResponse = $this->generateAiResponseForCapsuleResponse->execute($capsuleResponse->getCapsule()->getContent(), $response, $user);
 
     $capsuleResponse->setResponse($response)->setAiResponse($aiResponse);
 

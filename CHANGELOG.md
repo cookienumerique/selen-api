@@ -1,5 +1,10 @@
 # CHANGELOG 
 
+## [1.19.0] - 2022-04-12
+### Added
+
+- create journal entry 
+
 ## [1.18.0] - 2022-04-01
 ### Added
 

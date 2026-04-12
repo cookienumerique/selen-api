@@ -13,7 +13,7 @@ class OpenAiClient
     private LoggerInterface $logger
   ) {}
 
-  public function generate(string $prompt): string
+  public function generate(string $userPrompt, string $systemPrompt): string
   {
     $response = $this->httpClient->request('POST', 'https://api.openai.com/v1/chat/completions', [
       'headers' => [
@@ -23,10 +23,11 @@ class OpenAiClient
       'json' => [
         'model' => 'gpt-4o-mini',
         'messages' => [
-          ['role' => 'system', 'content' => 'You are SELEN inner intelligence.'],
-          ['role' => 'user', 'content' => $prompt],
+          ['role' => 'system', 'content' => $systemPrompt],
+          ['role' => 'user', 'content' => $userPrompt],
         ],
-        'temperature' => 0.7,
+        'temperature' => 0.3,
+        'max_tokens' => 120,
       ],
     ]);
     if ($response->getStatusCode() !== 200) {
