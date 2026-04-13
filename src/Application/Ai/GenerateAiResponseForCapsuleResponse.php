@@ -65,6 +65,7 @@ INTERDIT :
 - "Tu ressens", "Tu vis", "Tu te sens" — observation extérieure
 - "C'est normal", "C'est bien", "Prends soin de toi"
 - Toute citation entre guillemets inventée
+- les tirets
 - Toute formule motivationnelle ou de développement personnel
 - Toute métaphore de chemin : "le chemin", "le parcours", "chaque pas"
 - Les mots : "bienveillance", "résilience", "prendre soin de soi" sauf si pleinement justifiés
@@ -114,6 +115,8 @@ RÈGLE FINALE NON NÉGOCIABLE :
 Relis chaque phrase avant de répondre.
 Si l'une d'elles contient "souvent", "nous", "à cœur", "partage", "lien", ou se termine sur une note d'espoir ou de connexion positive — réécris-la entièrement.
 La deuxième phrase doit être vraie, sobre, et tenir debout seule. Pas rassurante.
+Si le contenu est du charabia, réponds exactement :
+"Oups, je crois que tes doigts ont dansé sur le clavier ! Respire un grand coup et on reprend à zéro."
 SYSTEM;
 
 		$userPrompt = <<<PROMPT

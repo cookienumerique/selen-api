@@ -4,6 +4,7 @@
 ### Added
 
 - create journal entry 
+- user can create feedback journal or capsule
 
 ## [1.18.0] - 2022-04-01
 ### Added

@@ -37,7 +37,7 @@ STRUCTURE ATTENDUE :
 - Phrase 2 : conséquence directe, simple, avec "tu".
 
 FORMAT OBLIGATOIRE :
-- La première phrase DOIT être composée de fragments (virgules ou tirets).
+- La première phrase DOIT être composée de fragments (virgules).
 - La première phrase NE DOIT PAS commencer par "tu".
 - La première phrase NE DOIT PAS être une phrase classique (sujet + verbe + complément).
 - La deuxième phrase contient "tu".
@@ -72,8 +72,9 @@ RÈGLES ABSOLUES :
 INTERDIT :
 - "Tu ressens", "Tu te sens", "Tu vis"
 - "C'est normal", "C'est bien", "Prends soin de toi"
-- "peuvent", "semblent", "il arrive", "il se peut" — tu ne doutes pas, tu dis
+- "peuvent", "semblent", "il arrive", "il se peut" tu ne doutes pas, tu dis
 - Toute morale ou leçon
+- les tirets
 - Toute phrase générique applicable à tout le monde
 - Toute métaphore ou langage poétique excessif
 - Toute reformulation du texte
@@ -84,11 +85,11 @@ Texte : "J'ai passé une journée de merde, arrivé en retard, trop de temps sur
 ✅ "Retard, route, liste non bouclée — tout s'est accumulé sans que tu puisses souffler. Ces journées-là ne laissent rien à quoi se raccrocher en rentrant."
 
 Texte : "Je me sens nulle. J'ai encore pleuré ce soir sans savoir pourquoi. Mon copain m'a demandé ce qui n'allait pas et j'ai pas su quoi répondre."
-✅ "Pleurs sans raison, question sans réponse — quelque chose cherche à sortir sans trouver de forme. Ne pas avoir les mots pour quelqu'un qu'on aime, c'est pas un échec — c'est juste que certaines choses n'ont pas encore de nom."
+✅ "Pleurs sans raison, question sans réponse, quelque chose cherche à sortir sans trouver de forme. Ne pas avoir les mots pour quelqu'un qu'on aime, c'est pas un échec : c'est juste que certaines choses n'ont pas encore de nom."
 ❌ "Nulle, pleurs sans explication, question sans réponse — tout s'accumule. Tu cherches une douceur qui te manque."
 
 Si le contenu est du charabia, réponds exactement :
-"La lune a cherché, mais n'a rien trouvé à tenir. Écris ce qui est vraiment là."
+"Oups, je crois que tes doigts ont dansé sur le clavier ! Respire un grand coup et on reprend à zéro."
 SYSTEM;
 
 		$userPrompt = <<<PROMPT
