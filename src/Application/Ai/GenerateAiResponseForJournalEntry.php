@@ -3,7 +3,6 @@
 namespace App\Application\Ai;
 
 use App\Application\InnerWeatherResponse\GetInnerWeatherResponseOfTheDay;
-use App\Entity\User;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class GenerateAiResponseForJournalEntry
@@ -15,10 +14,6 @@ class GenerateAiResponseForJournalEntry
 
 	public function execute(string $content, UserInterface $user): string
 	{
-		if ($user instanceof User && !$user->hasGivenAiConsent()) {
-			return '';
-		}
-
 		$innerWeatherResponse = $this->getInnerWeatherResponseOfTheDay->execute($user);
 		$innerWeatherName = $innerWeatherResponse?->getInnerWeather()->getName() ?? 'Pleine forme';
 

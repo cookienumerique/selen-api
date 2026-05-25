@@ -40,7 +40,9 @@ final class UpdateCapsuleResponse
       throw new UnauthorizedCapsuleAccessException();
     }
 
-    $aiResponse = $this->generateAiResponseForCapsuleResponse->execute($capsuleResponse->getCapsule()->getContent(), $response, $user);
+    $aiResponse = $user->hasGivenAiConsent()
+      ? $this->generateAiResponseForCapsuleResponse->execute($capsuleResponse->getCapsule()->getContent(), $response, $user)
+      : '';
 
     $capsuleResponse->setResponse($response)->setAiResponse($aiResponse);
 

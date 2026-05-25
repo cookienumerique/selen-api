@@ -180,8 +180,6 @@ class User implements UserInterface, SerializableInterface
             'name' => $this->name,
             'picture' => $this->picture,
             'createdAt' => $this->createdAt->format(DATE_ATOM),
-            'consentAt' => $this->consentAt?->format(DATE_ATOM),
-            'consentVersion' => $this->consentVersion,
             'consentAiOptin' => $this->consentAiOptin,
         ];
     }

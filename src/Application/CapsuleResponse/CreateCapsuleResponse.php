@@ -21,10 +21,12 @@ class CreateCapsuleResponse
   public function execute(string $response, User $user, Capsule $capsule): CapsuleResponse
   {
     if ($this->repository->isCapsuleAlreadyAnswered($user, $capsule)) {
-      throw new CapsuleAlreadyRespondedException('Capsule already responded by this user.');
+      throw new CapsuleAlreadyRespondedException();
     }
 
-    $aiResponse = $this->generateAiResponseForCapsuleResponse->execute($capsule->getContent(), $response, $user);
+    $aiResponse = $user->hasGivenAiConsent()
+      ? $this->generateAiResponseForCapsuleResponse->execute($capsule->getContent(), $response, $user)
+      : '';
 
     $capsuleResponse = (new CapsuleResponse())
       ->setAuthor($user)

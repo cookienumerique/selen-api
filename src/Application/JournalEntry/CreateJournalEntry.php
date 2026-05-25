@@ -16,7 +16,9 @@ class CreateJournalEntry
 
   public function execute(string $content, User $user): JournalEntry
   {
-    $aiResponse = $this->generateAiResponseForJournalEntry->execute($content, $user);
+    $aiResponse = $user->hasGivenAiConsent()
+      ? $this->generateAiResponseForJournalEntry->execute($content, $user)
+      : '';
 
     $journalEntry = (new JournalEntry())
       ->setAuthor($user)
