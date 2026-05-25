@@ -49,6 +49,15 @@ class User implements UserInterface, SerializableInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $firstName = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $consentAt = null;
+
+    #[ORM\Column(length: 16, nullable: true)]
+    private ?string $consentVersion = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $consentAiOptin = null;
+
     public function __construct()
     {
         $this->uid = Uuid::v4();
@@ -171,7 +180,51 @@ class User implements UserInterface, SerializableInterface
             'name' => $this->name,
             'picture' => $this->picture,
             'createdAt' => $this->createdAt->format(DATE_ATOM),
+            'consentAt' => $this->consentAt?->format(DATE_ATOM),
+            'consentVersion' => $this->consentVersion,
+            'consentAiOptin' => $this->consentAiOptin,
         ];
+    }
+
+    public function getConsentAt(): ?\DateTimeImmutable
+    {
+        return $this->consentAt;
+    }
+
+    public function setConsentAt(?\DateTimeImmutable $consentAt): static
+    {
+        $this->consentAt = $consentAt;
+
+        return $this;
+    }
+
+    public function getConsentVersion(): ?string
+    {
+        return $this->consentVersion;
+    }
+
+    public function setConsentVersion(?string $consentVersion): static
+    {
+        $this->consentVersion = $consentVersion;
+
+        return $this;
+    }
+
+    public function getConsentAiOptin(): ?bool
+    {
+        return $this->consentAiOptin;
+    }
+
+    public function setConsentAiOptin(?bool $consentAiOptin): static
+    {
+        $this->consentAiOptin = $consentAiOptin;
+
+        return $this;
+    }
+
+    public function hasGivenAiConsent(): bool
+    {
+        return $this->consentAiOptin === true;
     }
 
     public function getAppleId(): ?string

@@ -1,5 +1,12 @@
 # CHANGELOG 
 
+## [1.20.0] - 2026-05-26
+### Added
+
+- RGPD consent endpoint `POST /users/consent` (aiOptin)
+- user consent fields on `user` table : `consent_at`, `consent_version`, `consent_ai_optin`
+- AI generation (capsule response + journal entry) is now gated on `consent_ai_optin === true`
+
 ## [1.19.0] - 2022-04-12
 ### Added
 

@@ -3,6 +3,7 @@
 namespace App\Application\Ai;
 
 use App\Application\InnerWeatherResponse\GetInnerWeatherResponseOfTheDay;
+use App\Entity\User;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class GenerateAiResponseForCapsuleResponse
@@ -15,6 +16,10 @@ class GenerateAiResponseForCapsuleResponse
 	public function execute(string $contentCapsule, string $response, UserInterface $user): string
 	{
 		if ($response === '') {
+			return '';
+		}
+
+		if ($user instanceof User && !$user->hasGivenAiConsent()) {
 			return '';
 		}
 

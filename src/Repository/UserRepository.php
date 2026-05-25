@@ -49,4 +49,10 @@ class UserRepository extends ServiceEntityRepository
             throw new UserDeletionException();
         }
     }
+
+    public function save(User $user): void
+    {
+        $this->getEntityManager()->persist($user);
+        $this->getEntityManager()->flush();
+    }
 }
