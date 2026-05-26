@@ -15,8 +15,8 @@ parameters:
             storeUrl: 'https://apps.apple.com/app/id6758859179'
 
         android:
-            latest: '1.24.0'
-            minRequired: '1.24.0'
+            latest: '1.25.0'
+            minRequired: '1.25.0'
             forceUpdate: true
             storeUrl: 'market://details?id=com.cookienumerique.selen'
 
