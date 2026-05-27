@@ -7,6 +7,18 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app_version:
+        ios:
+            latest: '1.25.0'
+            minRequired: '1.25.0'
+            forceUpdate: true
+            storeUrl: 'https://apps.apple.com/app/id6758859179'
+
+        android:
+            latest: '1.25.0'
+            minRequired: '1.25.0'
+            forceUpdate: true
+            storeUrl: 'market://details?id=com.cookienumerique.selen'
 
 services:
     # default configuration for services in *this* file
@@ -28,5 +40,19 @@ services:
     App\EventListener\ApiExceptionListener:
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+        arguments:
+            $debug: '%kernel.debug%'
+    App\Controller\MediaController:
+        arguments:
+            $storageDir: '%env(MOUNT_PATH_CONTAINER)%'
+    App\Application\Subscription\Google\GoogleSubscriptionVerifier:
+        arguments:
+            $googleAuthConfigPath: '%kernel.project_dir%/%env(GOOGLE_SERVICE_ACCOUNT_JSON)%'
+            $packageName: '%env(ANDROID_PACKAGE_NAME)%'
+    App\Application\Subscription\Apple\AppleSubscriptionValidator:
+        arguments:
+            $appleBundleId: '%env(APPLE_BUNDLE_ID)%'
+            $environment: '%env(APP_ENV)%'
+    App\Application\Ai\OpenAiClient:
+        arguments:
+            $apiKey: '%env(OPENAI_API_KEY)%'

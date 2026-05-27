@@ -1,0 +1,93 @@
+<?php
+
+namespace App\Application\Subscription\Google;
+
+use App\Exception\InvalidSubscriptionException;
+use Google\Client;
+use Google\Service\AndroidPublisher;
+use Google\Service\AndroidPublisher\SubscriptionPurchaseV2;
+use Google\Exception as GoogleException;
+use App\Enum\Subscription\SubscriptionBasePlanId;
+use Google\Service\AndroidPublisher\AutoRenewingPlan;
+use Google\Service\AndroidPublisher\SubscriptionPurchaseLineItem;
+use Google\Service\AndroidPublisher\OfferDetails;
+
+class GoogleSubscriptionVerifier
+{
+  private AndroidPublisher $androidPublisherService;
+  private string $packageName;
+  public function __construct(string $googleAuthConfigPath, string $packageName)
+  {
+    $client = new Client();
+    $client->setAuthConfig($googleAuthConfigPath);
+    $client->addScope(AndroidPublisher::ANDROIDPUBLISHER);
+
+    $this->androidPublisherService = new AndroidPublisher($client);
+    $this->packageName = $packageName;
+  }
+
+  public function execute(
+    string $productId,
+    string $purchaseToken
+  ): SubscriptionPurchaseV2 {
+    // --- MODE DEBUG / MOCK ---
+    // if ($purchaseToken === 'debug') {
+    //   return $this->createMockSubscription($productId);
+    // }
+
+    try {
+      // Récupération de l'abonnement via l'API V2
+      $subscription = $this->androidPublisherService
+        ->purchases_subscriptionsv2
+        ->get($this->packageName, $purchaseToken);
+    } catch (GoogleException $e) {
+      throw new InvalidSubscriptionException("Google API Error: " . $e->getMessage());
+    }
+
+    $lineItems = $subscription->getLineItems();
+    if (empty($lineItems)) {
+      throw new InvalidSubscriptionException("No line items found.");
+    }
+
+    $lineItem = $lineItems[0];
+
+    // 2. Sécurité : Vérifier que le ProductId correspond
+    if ($lineItem->getProductId() !== $productId) {
+      throw new InvalidSubscriptionException("Product ID mismatch.");
+    }
+
+    if ($lineItem->getExpiryTime() === null) {
+      throw new InvalidSubscriptionException("Missing expiry time.");
+    }
+
+    return $subscription;
+  }
+
+  /**
+   * Crée une réponse fictive pour les tests
+   */
+  private function createMockSubscription(string $productId): SubscriptionPurchaseV2
+  {
+    $subscription = new SubscriptionPurchaseV2();
+    $subscription->setSubscriptionState('SUBSCRIPTION_STATE_ACTIVE');
+
+    // On crée le LineItem fictif
+    $lineItem = new SubscriptionPurchaseLineItem();
+    $lineItem->setProductId($productId);
+    // Expiration dans 30 jours (en millisecondes pour Google)
+    // Google expects the expiry time as an RFC3339 timestamp, not milliseconds.
+    $lineItem->setExpiryTime((new \DateTimeImmutable('+30 days'))->format(DATE_RFC3339_EXTENDED));
+    $autoRenewingPlan = new AutoRenewingPlan();
+    $autoRenewingPlan->setAutoRenewEnabled(true);
+    $lineItem->setAutoRenewingPlan($autoRenewingPlan);
+    // On ajoute le BasePlanId (important pour ton Enum !)
+    $offerDetails = new OfferDetails();
+    $basePlanId = SubscriptionBasePlanId::SELEN_PREMIUM_MONTHLY_FOUNDER->value;
+
+    $offerDetails->setBasePlanId($basePlanId);
+    $lineItem->setOfferDetails($offerDetails);
+
+    $subscription->setLineItems([$lineItem]);
+    return $subscription;
+  }
+}

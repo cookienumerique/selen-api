@@ -7,11 +7,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 use App\Domain\User\UserRole;
+use App\Contract\SerializableInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
-class User implements UserInterface
+class User implements UserInterface, SerializableInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -21,7 +22,7 @@ class User implements UserInterface
     #[ORM\Column(type: 'uuid', unique: true)]
     private Uuid $uid;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(length: 180, nullable: true)]
     private ?string $email = null;
 
     /**
@@ -30,16 +31,38 @@ class User implements UserInterface
     #[ORM\Column]
     private array $roles = [];
 
-    #[ORM\Column(length: 255, unique: true)]
+    #[ORM\Column(length: 255, unique: true, nullable: true)]
     private ?string $googleId = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $name = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $picture = null;
+
+    #[ORM\Column(length: 255, nullable: true, unique: true)]
+    private ?string $appleId = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $firstName = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $consentAt = null;
+
+    #[ORM\Column(length: 16, nullable: true)]
+    private ?string $consentVersion = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $consentAiOptin = null;
+
     public function __construct()
     {
         $this->uid = Uuid::v4();
         $this->createdAt = new \DateTimeImmutable();
+        $this->roles = [UserRole::USER];
     }
 
     public function getId(): ?int
@@ -119,6 +142,109 @@ class User implements UserInterface
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(?string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getPicture(): ?string
+    {
+        return $this->picture;
+    }
+
+    public function setPicture(?string $picture): static
+    {
+        $this->picture = $picture;
+
+        return $this;
+    }
+
+    public function serialize(): array
+    {
+        return [
+            'uid' => $this->uid->toRfc4122(),
+            'email' => $this->email,
+            'roles' => $this->roles,
+            'firstName' => $this->firstName,
+            'name' => $this->name,
+            'picture' => $this->picture,
+            'createdAt' => $this->createdAt->format(DATE_ATOM),
+            'consentAiOptin' => $this->consentAiOptin,
+        ];
+    }
+
+    public function getConsentAt(): ?\DateTimeImmutable
+    {
+        return $this->consentAt;
+    }
+
+    public function setConsentAt(?\DateTimeImmutable $consentAt): static
+    {
+        $this->consentAt = $consentAt;
+
+        return $this;
+    }
+
+    public function getConsentVersion(): ?string
+    {
+        return $this->consentVersion;
+    }
+
+    public function setConsentVersion(?string $consentVersion): static
+    {
+        $this->consentVersion = $consentVersion;
+
+        return $this;
+    }
+
+    public function getConsentAiOptin(): ?bool
+    {
+        return $this->consentAiOptin;
+    }
+
+    public function setConsentAiOptin(?bool $consentAiOptin): static
+    {
+        $this->consentAiOptin = $consentAiOptin;
+
+        return $this;
+    }
+
+    public function hasGivenAiConsent(): bool
+    {
+        return $this->consentAiOptin === true;
+    }
+
+    public function getAppleId(): ?string
+    {
+        return $this->appleId;
+    }
+
+    public function setAppleId(?string $appleId): static
+    {
+        $this->appleId = $appleId;
+
+        return $this;
+    }
+
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(?string $firstName): static
+    {
+        $this->firstName = $firstName;
 
         return $this;
     }

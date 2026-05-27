@@ -6,6 +6,7 @@ use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Exception\UserCreationException;
+use App\Exception\UserDeletionException;
 
 /**
  * @extends ServiceEntityRepository<User>
@@ -32,5 +33,26 @@ class UserRepository extends ServiceEntityRepository
         } catch (\Throwable) {
             throw new UserCreationException();
         }
+    }
+
+    /**
+     * @param User $user
+     * @return void
+     * @throws UserDeletionException
+     */
+    public function delete(User $user): void
+    {
+        try {
+            $this->getEntityManager()->remove($user);
+            $this->getEntityManager()->flush();
+        } catch (\Throwable $e) {
+            throw new UserDeletionException();
+        }
+    }
+
+    public function save(User $user): void
+    {
+        $this->getEntityManager()->persist($user);
+        $this->getEntityManager()->flush();
     }
 }

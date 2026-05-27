@@ -1,0 +1,13 @@
+.git/
+node_modules/
+vendor/
+dist/
+.next/
+var/
+storage/
+public/bundles/
+*.log
+vendor/google/
+vendor/symfony/
+var/cache/
+var/log/

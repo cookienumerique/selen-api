@@ -4,6 +4,7 @@
 namespace App\Exception;
 
 use App\Exception\ApiException;
+use Symfony\Component\HttpFoundation\Response;
 
 final class MissingPayloadException extends ApiException
 {
@@ -14,7 +15,7 @@ final class MissingPayloadException extends ApiException
     parent::__construct(
       'MISSING_PAYLOAD',
       $message ?? sprintf('Missing required payload field: %s', $field),
-      400
+      Response::HTTP_BAD_REQUEST
     );
   }
 }
