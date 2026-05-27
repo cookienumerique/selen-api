@@ -9,8 +9,8 @@
 parameters:
     app_version:
         ios:
-            latest: '1.24.0'
-            minRequired: '1.24.0'
+            latest: '1.25.0'
+            minRequired: '1.25.0'
             forceUpdate: true
             storeUrl: 'https://apps.apple.com/app/id6758859179'
 
