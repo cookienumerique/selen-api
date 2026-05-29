@@ -1,5 +1,22 @@
 # CHANGELOG 
 
+## [1.21.0] - 2026-05-29
+### Added
+
+- onboarding endpoint `POST /users/onboarding` (RGPD consent + signup intent)
+- `SignupIntent` enum for the "what brings you here?" onboarding screen
+- contextual AI opt-in endpoint `POST /users/consent-ai` (triggers: `first_capsule`, `first_journal`, `settings`)
+- user fields on `user` table : `signup_intent`, `signup_intent_other`, `signup_intent_at`, `onboarding_version`, `consent_ai_optin_at`, `consent_ai_optin_trigger`
+
+### Changed
+
+- AI opt-in is now collected contextually via `POST /users/consent-ai` instead of at consent time
+- `consent_at` and `consent_version` are preserved once set (kept as RGPD proof of the first consent date)
+
+### Deprecated
+
+- `POST /users/consent` (legacy AI opt-in), to be removed once the app migrates off it
+
 ## [1.20.0] - 2026-05-26
 ### Added
 

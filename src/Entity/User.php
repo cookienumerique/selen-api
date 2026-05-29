@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 use App\Domain\User\UserRole;
+use App\Domain\User\SignupIntent;
 use App\Contract\SerializableInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -49,14 +50,43 @@ class User implements UserInterface, SerializableInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $firstName = null;
 
+    // Consentement RGPD aux données de santé (art. 9), recueilli à l'écran de consentement de l'onboarding.
+    // Tant que ce champ est null, l'onboarding n'est pas validé et l'accès à l'app reste bloqué.
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $consentAt = null;
 
+    // Version du texte de consentement accepté (ex : "1.0"). Sert à redemander le consentement si le texte évolue.
     #[ORM\Column(length: 16, nullable: true)]
     private ?string $consentVersion = null;
 
+    // Opt-in IA OpenAI pour la "réponse de la lune". null = pas encore demandé, true = accepté, false = refusé.
+    // Optionnel : son refus n'empêche pas d'utiliser le reste de l'app (météo, capsules, journal, calendrier).
     #[ORM\Column(nullable: true)]
     private ?bool $consentAiOptin = null;
+
+    // Intention déclarée à l'inscription (écran "Qu'est-ce qui t'amène ici ?"). Voir l'enum SignupIntent pour les valeurs et leur libellé français.
+    #[ORM\Column(length: 32, nullable: true, enumType: SignupIntent::class)]
+    private ?SignupIntent $signupIntent = null;
+
+    // Texte libre saisi uniquement si signupIntent vaut "autre" (max 200 caractères). null dans tous les autres cas.
+    #[ORM\Column(length: 200, nullable: true)]
+    private ?string $signupIntentOther = null;
+
+    // Date d'enregistrement de l'intention. Permet de mesurer le délai entre l'inscription et la réponse.
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $signupIntentAt = null;
+
+    // Version de l'onboarding suivi par l'utilisatrice (ex : "1.26"). Sert à comparer les cohortes entre versions d'onboarding.
+    #[ORM\Column(length: 8, nullable: true)]
+    private ?string $onboardingVersion = null;
+
+    // Date du choix opt-in IA (accepté ou refusé). Va de pair avec consentAiOptin.
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $consentAiOptinAt = null;
+
+    // Écran qui a déclenché la demande d'opt-in IA : first_capsule, first_journal ou settings.
+    #[ORM\Column(length: 32, nullable: true)]
+    private ?string $consentAiOptinTrigger = null;
 
     public function __construct()
     {
@@ -181,6 +211,9 @@ class User implements UserInterface, SerializableInterface
             'picture' => $this->picture,
             'createdAt' => $this->createdAt->format(DATE_ATOM),
             'consentAiOptin' => $this->consentAiOptin,
+            'consentAt' => $this->consentAt?->format(DATE_ATOM),
+            'signupIntent' => $this->signupIntent?->value,
+            'onboardingVersion' => $this->onboardingVersion,
         ];
     }
 
@@ -245,6 +278,78 @@ class User implements UserInterface, SerializableInterface
     public function setFirstName(?string $firstName): static
     {
         $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    public function getSignupIntent(): ?SignupIntent
+    {
+        return $this->signupIntent;
+    }
+
+    public function setSignupIntent(?SignupIntent $signupIntent): static
+    {
+        $this->signupIntent = $signupIntent;
+
+        return $this;
+    }
+
+    public function getSignupIntentOther(): ?string
+    {
+        return $this->signupIntentOther;
+    }
+
+    public function setSignupIntentOther(?string $signupIntentOther): static
+    {
+        $this->signupIntentOther = $signupIntentOther;
+
+        return $this;
+    }
+
+    public function getSignupIntentAt(): ?\DateTimeImmutable
+    {
+        return $this->signupIntentAt;
+    }
+
+    public function setSignupIntentAt(?\DateTimeImmutable $signupIntentAt): static
+    {
+        $this->signupIntentAt = $signupIntentAt;
+
+        return $this;
+    }
+
+    public function getOnboardingVersion(): ?string
+    {
+        return $this->onboardingVersion;
+    }
+
+    public function setOnboardingVersion(?string $onboardingVersion): static
+    {
+        $this->onboardingVersion = $onboardingVersion;
+
+        return $this;
+    }
+
+    public function getConsentAiOptinAt(): ?\DateTimeImmutable
+    {
+        return $this->consentAiOptinAt;
+    }
+
+    public function setConsentAiOptinAt(?\DateTimeImmutable $consentAiOptinAt): static
+    {
+        $this->consentAiOptinAt = $consentAiOptinAt;
+
+        return $this;
+    }
+
+    public function getConsentAiOptinTrigger(): ?string
+    {
+        return $this->consentAiOptinTrigger;
+    }
+
+    public function setConsentAiOptinTrigger(?string $consentAiOptinTrigger): static
+    {
+        $this->consentAiOptinTrigger = $consentAiOptinTrigger;
 
         return $this;
     }
